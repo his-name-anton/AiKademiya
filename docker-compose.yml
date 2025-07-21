@@ -22,9 +22,3 @@ services:
       - "8000:8000"
     depends_on:
       - db
-  n8n:
-    image: n8nio/n8n:1
-    ports:
-      - "5678:5678"
-    environment:
-      - GENERIC_TIMEZONE=UTC
