@@ -129,7 +129,7 @@ STATICFILES_DIRS = [BASE_DIR.parent / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom user model
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = 'core.User'
 
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

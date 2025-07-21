@@ -1,30 +1,87 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-md mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold text-center text-gray-900 mb-6">Регистрация</h1>
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-6 py-8">
+  <div class="w-full max-w-screen-xl flex flex-col md:flex-row items-center justify-center gap-12">
 
-    <div class="bg-white shadow rounded-xl p-6">
-        <form method="post" class="space-y-4">
-            {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <p class="text-sm text-red-600 mt-1">{{ field.errors|striptags }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">
-                Зарегистрироваться
-            </button>
-        </form>
-
-        <p class="mt-4 text-sm text-center text-gray-600">
-            Уже есть аккаунт?
-            <a href="/login/" class="text-blue-600 hover:underline">Войти</a>
-        </p>
+    <!-- Левая колонка -->
+    <div class="hidden md:block w-full md:w-1/2">
+      <div class="mb-8">
+        <a href="/" class="flex items-center text-2xl font-bold text-blue-600 mb-6">
+          <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" class="w-8 h-8 mr-2" alt="logo">
+          AiKademiya
+        </a>
+        <ul class="space-y-6">
+          <li>
+            <div class="flex items-start space-x-4">
+              <svg class="w-6 h-6 text-blue-600 mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 01.083 1.32l-.083.094-8 8a1 1 0 01-1.32.083l-.094-.083-4-4a1 1 0 011.32-1.497l.094.083L8 12.584l7.293-7.291a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Создавай курсы с ИИ</h3>
+                <p class="text-gray-500 dark:text-gray-400">Запускай обучение за 5 минут без кода.</p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-start space-x-4">
+              <svg class="w-6 h-6 text-blue-600 mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 01.083 1.32l-.083.094-8 8a1 1 0 01-1.32.083l-.094-.083-4-4a1 1 0 011.32-1.497l.094.083L8 12.584l7.293-7.291a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Обучение под тебя</h3>
+                <p class="text-gray-500 dark:text-gray-400">Курсы по любым темам — от ИИ.</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-</div>
+
+    <!-- Правая колонка: форма -->
+    <div class="w-full md:w-1/2 max-w-md bg-white rounded-lg shadow p-6 md:p-8 dark:bg-gray-800 dark:border dark:border-gray-700">
+      <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Создать аккаунт</h1>
+
+      <div class="space-y-4 mb-6">
+        <a href="" class="w-full flex items-center justify-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+          <img class="w-5 h-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"> Зарегистрироваться через Google
+        </a>
+        <button class="w-full flex items-center justify-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">...SVG Apple...</svg>
+          Зарегистрироваться через Apple
+        </button>
+      </div>
+
+      <div class="flex items-center mb-4">
+        <hr class="flex-grow border-gray-200" />
+        <span class="mx-2 text-sm text-gray-400">или</span>
+        <hr class="flex-grow border-gray-200" />
+      </div>
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
+              {{ field.label }}
+            </label>
+            <input
+              type="{{ field.field.widget.input_type }}"
+              name="{{ field.name }}"
+              id="{{ field.id_for_label }}"
+              value="{{ field.value|default:'' }}"
+              class="w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Введите {{ field.label|lower }}"
+            >
+            {% if field.errors %}
+              <p class="text-sm text-red-600 mt-1">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg text-sm">
+          Зарегистрироваться
+        </button>
+        <p class="text-sm text-center text-gray-500">
+          Уже есть аккаунт? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Войти</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
 {% endblock %}
