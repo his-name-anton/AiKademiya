@@ -20,7 +20,7 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)  # 🔹 Войти сразу после регистрации
+        login(self.request, user)
 
         if user.email:
             send_mail(
@@ -31,7 +31,7 @@ class SignUpView(CreateView):
                 fail_silently=True,
             )
 
-        return redirect("profile")  # 🔹 Редирект в профиль
+        return redirect("profile")
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
