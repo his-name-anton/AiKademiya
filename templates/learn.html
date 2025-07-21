@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Learn</h1>
+{% if allowed %}
+<p>Access to learning materials (placeholder).</p>
+{% else %}
+<p>View only demo content. Please login to unlock full access.</p>
+{% endif %}
+{% endblock %}
