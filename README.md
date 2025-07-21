@@ -8,6 +8,11 @@ Educational course generation platform.
    ```bash
    pip install -r requirements.txt
    ```
+   Install Node dependencies and build Tailwind CSS:
+   ```bash
+   npm install
+   npx tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --minify
+   ```
 2. Run services with Docker Compose (PostgreSQL and n8n):
    ```bash
    docker-compose up
