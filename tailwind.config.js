@@ -1,5 +1,6 @@
 // tailwind.config.js
 module.exports = {
+  darkMode: 'class',
   content: [
     './templates/**/*.html',       // все шаблоны
     './aikademiya/**/*.py',        // если ты используешь классы в Python (напр. в render)
