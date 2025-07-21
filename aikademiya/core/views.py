@@ -1,7 +1,8 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.shortcuts import render
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 
 from django.conf import settings
@@ -16,11 +17,11 @@ def index(request):
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/register.html"
-    success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        user = self.object
+        user = form.save()
+        login(self.request, user)  # 🔹 Войти сразу после регистрации
+
         if user.email:
             send_mail(
                 "Welcome to AiKademiya",
@@ -29,15 +30,12 @@ class SignUpView(CreateView):
                 [user.email],
                 fail_silently=True,
             )
-        return response
+
+        return redirect("profile")  # 🔹 Редирект в профиль
 
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "profile.html"
-
-    @login_required
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
 
 def generate_course_view(request):

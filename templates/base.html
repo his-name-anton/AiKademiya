@@ -1,23 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>AiKademiya</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <nav>
-        <a href="/">Home</a>
-        {% if user.is_authenticated %}
-            <a href="/profile/">Profile</a>
-            <a href="/logout/">Logout</a>
-        {% else %}
-            <a href="/login/">Login</a>
-            <a href="/register/">Register</a>
-        {% endif %}
-        <a href="/generate/">Generate</a>
-        <a href="/learn/">Learn</a>
-    </nav>
-    <hr>
-    {% block content %}{% endblock %}
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="/" class="text-xl font-bold text-blue-600">AiKademiya</a>
+            <nav class="flex gap-4 items-center">
+                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Главная</a>
+                <a href="/generate/" class="text-gray-700 hover:text-blue-600 font-medium">Генерация</a>
+                <a href="/learn/" class="text-gray-700 hover:text-blue-600 font-medium">Каталог</a>
+
+                {% if user.is_authenticated %}
+                    <a href="/profile/" class="text-gray-700 hover:text-blue-600 font-medium">Профиль</a>
+                    <form action="/logout/" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Выйти</button>
+                    </form>
+                {% else %}
+                    <a href="/login/" class="text-gray-700 hover:text-blue-600 font-medium">Вход</a>
+                    <a href="/register/" class="text-gray-700 hover:text-blue-600 font-medium">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t py-6 text-center text-sm text-gray-500 mt-12">
+        © {{ now|date:"Y" }} AiKademiya. Все права защищены.
+    </footer>
 </body>
 </html>
