@@ -28,5 +28,15 @@ class SignUpView(CreateView):
         return redirect("profile")
 
 
+class ForgotPasswordView(TemplateView):
+    template_name = "registration/forgot-password.html"
+
+
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "profile.html"
+
+
+class SettingsView(LoginRequiredMixin, TemplateView):
+    template_name = "settings.html"
+
+
