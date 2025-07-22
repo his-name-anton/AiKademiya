@@ -42,3 +42,19 @@ During local development you can run a fake SMTP server, for example with
 The project connects to PostgreSQL using environment variables defined in
 `docker-compose.yml`. n8n can be configured with your OpenAI API key to test
 requests to the model.
+
+## Django apps
+
+The codebase is organised into dedicated Django applications:
+
+| App | Purpose |
+|-----|---------|
+| **users** | Authentication, OAuth, roles, subscription status and user profiles |
+| **courses** | Courses, modules and chapters of learning content |
+| **quizzes** | Questions, answers and test evaluation logic |
+| **progress** | Tracks completion of courses and chapters |
+| **generation** | Stores history of content generation requests |
+| **billing** | Subscription plans and payment processing |
+| **catalog** | Public catalogue of courses with filters and ratings |
+| **adminpanel** | Admin UI, reports and moderation tools |
+| **core** | Shared utilities, abstract models and middleware |
