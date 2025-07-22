@@ -1,33 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-top justify-center px-6 py-8">
-    <div class="max-w-2xl mx-auto px-4 py-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Профиль пользователя</h1>
-
-        <div class="bg-white shadow rounded-xl p-6 space-y-4">
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
-                    {{ user.email|default_if_none:""|slice:":1"|upper }}
+<div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-2 xl:gap-4 dark:bg-gray-900">
+<div class="mb-4 col-span-full xl:mb-2">
+        <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Настройки</h1>
+</div>
+    <div class="col-span-full xl:col-auto">
+        <div class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+            <h3 class="mb-4 text-xl font-semibold dark:text-white">Основная информация</h3>
+            <form action="#">
+                <div class="grid grid-cols-6 gap-6">
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="first-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Имя</label>
+                        <input type="text" name="first-name" id="first-name"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                               placeholder="Bonnie" required>
+                    </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="last-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Фамилия</label>
+                        <input type="text" name="last-name" id="last-name"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                               placeholder="Green" required>
+                    </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="email"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                <div id="email">
+                                <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>
+                                </div>
+                    </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="birthday" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">День рождения</label>
+                        <input type="number" name="birthday" id="birthday"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                               placeholder="01.01.2000" required>
+                    </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="organization" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Чем занимаюсь</label>
+                        <input type="text" name="organization" id="organization"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                               placeholder="Company Name" required>
+                    </div>
+                    <div class="col-span-6 sm:col-full">
+                        <button type="submit" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Сохранить</button>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>
-                </div>
-            </div>
-
-            <hr class="my-4">
-
-            <div>
-                <p class="text-gray-700">Подписка: <span class="font-medium text-blue-600">Free</span></p>
-                <p class="text-gray-500 text-sm italic">* Информация о подписке скоро будет дополнена.</p>
-            </div>
-
-            <div>
-                <a href="/generate/"
-                   class="inline-block mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                    Создать новый курс
-                </a>
-            </div>
+            </form>
         </div>
     </div>
-</section>
+</div>
+<!--<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-top justify-center px-6 py-8">-->
+<!--    <div class="max-w-2xl mx-auto px-4 py-12">-->
+<!--        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Профиль пользователя</h1>-->
+
+<!--        <div class="bg-white shadow rounded-xl p-6 space-y-4">-->
+<!--            <div class="flex items-center gap-4">-->
+<!--                <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">-->
+<!--                    {{ user.email|default_if_none:""|slice:":1"|upper }}-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                    <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <hr class="my-4">-->
+
+<!--            <div>-->
+<!--                <p class="text-gray-700">Подписка: <span class="font-medium text-blue-600">Free</span></p>-->
+<!--                <p class="text-gray-500 text-sm italic">* Информация о подписке скоро будет дополнена.</p>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <a href="/generate/"-->
+<!--                   class="inline-block mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">-->
+<!--                    Создать новый курс-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
 {% endblock %}
