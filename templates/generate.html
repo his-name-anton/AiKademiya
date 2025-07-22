@@ -4,20 +4,21 @@
 {% if allowed %}
 <section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-6 py-8">
     <div class="w-full md:w-1/2 max-w-md bg-white rounded-lg shadow p-6 md:p-8 dark:bg-gray-800 dark:border dark:border-gray-700">
-        <div class="mb-6">
-            <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Что будет изучать?</h3>
-            <input type="text" id="default-input"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                   placeholder="Например Основы программирования на python">
-        </div>
+        <form id="generate-form">
+            {% csrf_token %}
+            <div class="mb-6">
+                <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Что будет изучать?</h3>
+                <input type="text" id="topic" name="topic" minlength="10" required
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Например Основы программирования на python">
+            </div>
 
         <div class="mb-6">
             <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Какая сложность?</h3>
             <ul class="grid w-full gap-6 md:grid-cols-1">
                 <li>
-                    <input type="radio" id="eazy" name="hosting" value="hosting-small" class="hidden peer"
-                           required/>
-                    <label for="eazy"
+                    <input type="radio" id="beginner" name="difficulty" value="beginner" class="hidden peer" required>
+                    <label for="beginner"
                            class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Лёгкий</div>
@@ -31,9 +32,9 @@
                     </label>
                 </li>
                 <li>
-                    <input type="radio" id="middle" name="hosting" value="hosting-big" class="hidden peer">
-                    <label for="middle"
-                           class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <input type="radio" id="intermediate" name="difficulty" value="intermediate" class="hidden peer">
+                    <label for="intermediate"
+                            class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Продвинутый</div>
                             <div class="w-full">Вы уже знакомы с этой темой, хотите углубиться</div>
@@ -46,9 +47,9 @@
                     </label>
                 </li>
                 <li>
-                    <input type="radio" id="professional" name="hosting" value="hosting-big" class="hidden peer">
-                    <label for="professional"
-                           class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <input type="radio" id="advanced" name="difficulty" value="advanced" class="hidden peer">
+                    <label for="advanced"
+                            class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Профессиональный</div>
                             <div class="w-full">В этой теме вы как рыба в воде, но хотите стать ещё лучше</div>
@@ -66,34 +67,33 @@
         <div class="mb-6">
             <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">В каком стиле составить курс?</h3>
             <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
-                <input checked id="bordered-radio-1" type="radio" value="" name="bordered-radio"
-                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="bordered-radio-1"
-                       class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Стандартный</label>
+                <input id="style-formal" type="radio" value="formal" name="writing_style" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+                <label for="style-formal" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Формальный</label>
             </div>
 
             <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
-                <input id="bordered-radio-2" type="radio" value="" name="bordered-radio"
-                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="bordered-radio-2"
-                       class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Академический</label>
+                <input id="style-casual" type="radio" value="casual" name="writing_style" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="style-casual" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Неформальный</label>
             </div>
 
             <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
-                <input id="bordered-radio-3" type="radio" value="" name="bordered-radio"
-                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="bordered-radio-3"
-                       class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Хулиган</label>
+                <input id="style-academic" type="radio" value="academic" name="writing_style" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="style-academic" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Академический</label>
+            </div>
+
+            <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
+                <input id="style-practical" type="radio" value="practical" name="writing_style" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="style-practical" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Практический</label>
             </div>
         </div>
         <div class="mb-6">
-            <button type="button"
+            <button type="submit"
                     class="w-full block text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                 Поехали!
             </button>
         </div>
 
-
+        </form>
     </div>
 </section>
 {% else %}
@@ -103,4 +103,51 @@
 </div>
 {% endif %}
 </div>
+<script>
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+
+document.getElementById('generate-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const topic = document.getElementById('topic').value.trim();
+    const difficulty = document.querySelector('input[name="difficulty"]:checked');
+    const style = document.querySelector('input[name="writing_style"]:checked');
+
+    if (topic.length < 10) {
+        alert('Тема должна содержать не менее 10 символов');
+        return;
+    }
+    if (!difficulty) {
+        alert('Пожалуйста, выберите сложность');
+        return;
+    }
+    if (!style) {
+        alert('Пожалуйста, выберите стиль');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/courses/validate-topic/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ topic }),
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            alert('Тема принята: ' + data.data.normalized_title);
+        } else {
+            alert(data.message || 'Ошибка');
+        }
+    } catch (err) {
+        alert('Ошибка запроса');
+    }
+});
+</script>
 {% endblock %}
