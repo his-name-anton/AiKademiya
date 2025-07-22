@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import CharField
 from django.utils.text import slugify
 
 from core.models import TimeStampedModel
@@ -25,12 +26,17 @@ class Course(TimeStampedModel):
     """Model representing a course draft during generation process."""
 
     STATUS_CHOICES = [
-        ("draft", "draft"),
+        ('init', 'init'),
+        ('topic_verification', 'topic_verification'),
+        ('topic_failed_verification', 'topic_failed_verification'),
+        ('normalize_and_categorization_topic', 'normalize_and_categorization_topic'),
         ("pending_confirmation", "pending_confirmation"),
         ("confirmed", "confirmed"),
-        ("rejected", "rejected"),
+        ("rejected_by_requester", "rejected_by_requester"),
         ("in_progress", "in_progress"),
         ("completed", "completed"),
+        ("draft", "draft"),
+        ("error", "error"),
     ]
 
     DIFFICULTY_CHOICES = [
@@ -57,7 +63,7 @@ class Course(TimeStampedModel):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default="beginner")
     writing_style = models.CharField(max_length=20, choices=WRITING_STYLE_CHOICES, default="practical")
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="draft")
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="init")
     confirmed_at = models.DateTimeField(null=True, blank=True)
 
     # legacy fields for future use
@@ -65,9 +71,9 @@ class Course(TimeStampedModel):
     description = models.TextField(blank=True)
     goal = models.TextField(blank=True)
     language = models.CharField(max_length=10, default="ru")
-    is_public = models.BooleanField(default=True)
+    is_public = models.BooleanField(default=False)
 
-    def __str__(self) -> str:
+    def __str__(self) -> CharField:
         return self.normalized_title or self.title
 
 

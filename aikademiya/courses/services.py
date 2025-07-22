@@ -8,6 +8,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from .models import Category, Course, CourseValidationLog
+import logging
+logger = logging.getLogger(__name__)
 
 
 class N8NService:
@@ -33,23 +35,14 @@ class N8NService:
         payload = {"topic": topic, "check_type": "course_topic"}
         return self._post(webhook_url, payload)
 
-    def categorize_topic(self, topic: str) -> Dict[str, Any]:
-        webhook_url = f"{self.webhook_base_url}/categorize-topic"
+    def analyze_topic(self, topic: str, categories: list[dict]) -> Dict[str, Any]:
+        webhook_url = f"{self.webhook_base_url}/analyze-topic"
         payload = {
-            "topic": topic,
-            "existing_categories": list(Category.objects.values_list("name", flat=True)),
+            "raw_topic": topic,
+            "categories": categories,
         }
         return self._post(webhook_url, payload)
 
-    def normalize_topic_title(self, topic: str) -> Dict[str, Any]:
-        webhook_url = f"{self.webhook_base_url}/normalize-title"
-        payload = {"original_topic": topic, "target_type": "course_title"}
-        return self._post(webhook_url, payload)
-
-    def determine_metadata(self, topic: str) -> Dict[str, Any]:
-        webhook_url = f"{self.webhook_base_url}/determine-metadata"
-        payload = {"topic": topic}
-        return self._post(webhook_url, payload)
 
 
 class CourseService:
@@ -106,66 +99,74 @@ class CourseService:
             self._log(course, "content_check", request_data, {}, is_successful=False, error_message=str(exc))
             raise
 
-    def _categorize_topic(self, course: Course, topic: str) -> Dict[str, Any]:
-        request_data = {"topic": topic}
+    def _analyze_topic(self, course: Course, topic: str) -> Dict[str, Any]:
+        existing_categories = list(Category.objects.values("id", "name"))
+        categories_payload = [{"id": c["id"], "title": c["name"]} for c in existing_categories]
+        request_data = {"raw_topic": topic, "categories": categories_payload}
+        course.status = "normalize_and_categorization_topic"
+        course.save()
         try:
-            response = self.n8n.categorize_topic(topic)
-            self._log(course, "categorization", request_data, response, is_successful=True)
-            return response.get("data", {})
-        except Exception as exc:  # noqa: BLE001
-            self._log(course, "categorization", request_data, {}, is_successful=False, error_message=str(exc))
+            response = self.n8n.analyze_topic(topic, categories_payload)
+            self._log(course, "analyze_topic", request_data, response, is_successful=True)
+            return response
+        except Exception as exc:
+            self._log(course, "analyze_topic", request_data, {}, is_successful=False, error_message=str(exc))
             raise
 
-    def _normalize_topic_title(self, course: Course, topic: str) -> Dict[str, Any]:
-        request_data = {"topic": topic}
+    def validate_topic(
+            self,
+            user_id: int,
+            topic: str,
+            difficulty: str | None = None,
+            writing_style: str | None = None,
+    ) -> Dict[str, Any]:
+        course = Course.objects.create(
+            original_topic=topic,
+            initiated_by_id=user_id,
+            status="init",
+            difficulty=difficulty,
+            writing_style=writing_style
+        )
+
         try:
-            response = self.n8n.normalize_topic_title(topic)
-            self._log(course, "normalization", request_data, response, is_successful=True)
-            return response.get("data", {})
-        except Exception as exc:  # noqa: BLE001
-            self._log(course, "normalization", request_data, {}, is_successful=False, error_message=str(exc))
+            # Проверка на запрещённый контент
+            course.status = "topic_verification"
+            course.save()
+            content_check_result = self._check_forbidden_content(course, topic)
+
+            if not content_check_result.get("is_allowed", True):
+                course.status = "topic_failed_verification"
+                course.save()
+                return {
+                    "status": "error",
+                    "error_code": "FORBIDDEN_TOPIC",
+                    "message": "Данная тема недоступна для создания курса",
+                }
+
+            # Категоризация и нормализация
+            course.status = "normalize_and_categorization_topic"
+            course.save()
+
+            analyze_result = self._analyze_topic(course, topic)
+            data = analyze_result.get("data", {})
+
+            if data.get("category_exists"):
+                category = Category.objects.get(id=data["category_id"])
+            else:
+                category = self._get_or_create_category(data["category_title"])
+
+            course.normalized_title = data["course_title"]
+            course.category = category
+            course.status = "pending_confirmation"
+            course.save()
+
+            return {"status": "success", "data": self._serialize_course(course)}
+
+        except Exception as exc:
+            logger.exception("Ошибка при валидации темы курса")
+            course.status = "error"
+            course.save()
             raise
-
-    def _determine_course_metadata(self, course: Course, topic: str) -> Dict[str, Any]:
-        request_data = {"topic": topic}
-        try:
-            response = self.n8n.determine_metadata(topic)
-            self._log(course, "determine_metadata", request_data, response, is_successful=True)
-            return response.get("data", {})
-        except Exception as exc:  # noqa: BLE001
-            self._log(course, "determine_metadata", request_data, {}, is_successful=False, error_message=str(exc))
-            return {}
-
-    def validate_topic(self, user_id: int, topic: str) -> Dict[str, Any]:
-        with transaction.atomic():
-            course = Course.objects.create(original_topic=topic, initiated_by_id=user_id, status="draft")
-            try:
-                content_check_result = self._check_forbidden_content(course, topic)
-                if not content_check_result.get("is_allowed", True):
-                    course.status = "rejected"
-                    course.save()
-                    return {
-                        "status": "error",
-                        "error_code": "FORBIDDEN_TOPIC",
-                        "message": "Данная тема недоступна для создания курса",
-                    }
-                categorization_result = self._categorize_topic(course, topic)
-                category = self._get_or_create_category(categorization_result.get("category_name", "Other"))
-                normalization_result = self._normalize_topic_title(course, topic)
-                metadata_result = self._determine_course_metadata(course, topic)
-
-                course.normalized_title = normalization_result.get("normalized_title", "")
-                course.category = category
-                course.difficulty = metadata_result.get("difficulty", "beginner")
-                course.writing_style = metadata_result.get("writing_style", "practical")
-                course.status = "pending_confirmation"
-                course.save()
-
-                return {"status": "success", "data": self._serialize_course(course)}
-            except Exception:
-                course.status = "rejected"
-                course.save()
-                raise
 
     def confirm_course(
         self,
@@ -183,6 +184,6 @@ class CourseService:
         return course
 
     def reject_course(self, course: Course) -> Course:
-        course.status = "rejected"
+        course.status = "rejected_by_requester"
         course.save()
         return course

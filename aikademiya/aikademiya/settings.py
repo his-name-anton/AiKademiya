@@ -162,6 +162,40 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@example.com"
 LOGIN_REDIRECT_URL = "profile"
 
 # n8n integration settings
-N8N_WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL", "http://localhost:5678/webhook")
+N8N_WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL", "https://main-avlarin.amvera.io/webhook")
 N8N_TIMEOUT = int(os.environ.get("N8N_TIMEOUT", 30))
 COURSE_VALIDATION_RETRY_ATTEMPTS = int(os.environ.get("COURSE_VALIDATION_RETRY_ATTEMPTS", 3))
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Не отключать логгеры Django
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',  # Записываем все уровни логов начиная с DEBUG
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'app_debug.log'),
+            'formatter': 'verbose',
+            'encoding': 'utf-8',  # чтобы кириллица не ломалась
+        },
+    },
+    'loggers': {
+        'django': {  # системные логи Django
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'myapp': {  # твои кастомные логи
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

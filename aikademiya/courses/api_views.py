@@ -20,20 +20,44 @@ def validate_topic(request):
     try:
         payload = json.loads(request.body.decode())
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "error_code": "VALIDATION_ERROR", "message": "Invalid JSON"}, status=400)
+        return JsonResponse({
+            "status": "error",
+            "error_code": "VALIDATION_ERROR",
+            "message": "Invalid JSON"
+        }, status=400)
 
     topic = payload.get("topic")
+    difficulty = payload.get("difficulty")
+    writing_style = payload.get("writing_style")
+
     if not topic:
-        return JsonResponse({"status": "error", "error_code": "VALIDATION_ERROR", "message": "Topic is required"}, status=400)
+        return JsonResponse({
+            "status": "error",
+            "error_code": "VALIDATION_ERROR",
+            "message": "Topic is required"
+        }, status=400)
 
     service = CourseService()
     try:
-        result = service.validate_topic(request.user.id, topic)
+        result = service.validate_topic(
+            user_id=request.user.id,
+            topic=topic,
+            difficulty=difficulty,
+            writing_style=writing_style
+        )
         return JsonResponse(result)
     except requests.exceptions.Timeout:
-        return JsonResponse({"status": "error", "error_code": "N8N_TIMEOUT", "message": "n8n timeout"}, status=502)
+        return JsonResponse({
+            "status": "error",
+            "error_code": "N8N_TIMEOUT",
+            "message": "n8n timeout"
+        }, status=502)
     except requests.exceptions.RequestException:
-        return JsonResponse({"status": "error", "error_code": "N8N_ERROR", "message": "n8n error"}, status=502)
+        return JsonResponse({
+            "status": "error",
+            "error_code": "N8N_ERROR",
+            "message": "n8n error"
+        }, status=502)
 
 
 @csrf_exempt

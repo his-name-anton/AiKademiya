@@ -114,8 +114,8 @@ function getCookie(name) {
 document.getElementById('generate-form').addEventListener('submit', async function (e) {
     e.preventDefault();
     const topic = document.getElementById('topic').value.trim();
-    const difficulty = document.querySelector('input[name="difficulty"]:checked');
-    const style = document.querySelector('input[name="writing_style"]:checked');
+    const difficulty = document.querySelector('input[name="difficulty"]:checked')?.value;
+    const style = document.querySelector('input[name="writing_style"]:checked')?.value;
 
     if (topic.length < 10) {
         alert('Тема должна содержать не менее 10 символов');
@@ -137,7 +137,7 @@ document.getElementById('generate-form').addEventListener('submit', async functi
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: JSON.stringify({ topic }),
+            body: JSON.stringify({ topic, difficulty, writing_style: style }),
         });
         const data = await response.json();
         if (data.status === 'success') {
