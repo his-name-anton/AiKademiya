@@ -2,12 +2,14 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
+
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
+
 
 class UserManager(BaseUserManager):
     """Custom manager for User model with email as unique identifier."""
@@ -18,6 +20,12 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("The Email must be set")
         email = self.normalize_email(email)
+        if "subscribe_status" not in extra_fields or extra_fields["subscribe_status"] is None:
+            try:
+                extra_fields["subscribe_status"] = SubscribeStatus.objects.get(name="new")
+            except SubscribeStatus.DoesNotExist:
+                extra_fields["subscribe_status"] = None
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -39,6 +47,22 @@ class UserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
+
+class SubscribeStatus(models.Model):
+    STATUS_CHOICES = [
+        ("new", "new"),
+        ("active", "active"),
+        ("disabled", "disabled"),
+        ("expire", "expire"),
+    ]
+
+    name = models.CharField(max_length=20, choices=STATUS_CHOICES, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
     username = None  # Удаляем username
     email = models.EmailField(unique=True)
@@ -48,7 +72,12 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
-
+    subscribe_status = models.ForeignKey(
+        'SubscribeStatus',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

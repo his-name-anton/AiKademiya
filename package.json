@@ -12,10 +12,10 @@
   "type": "commonjs",
   "dependencies": {
     "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+    "postcss": "^8.5.6"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.11"
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
   }
 }

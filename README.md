@@ -11,7 +11,7 @@ Educational course generation platform.
    Install Node dependencies and build Tailwind CSS:
    ```bash
    npm install
-   npx tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --minify
+   npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/tailwind.css
    ```
 2. Run services with Docker Compose (PostgreSQL and n8n):
    ```bash
@@ -19,6 +19,7 @@ Educational course generation platform.
    ```
 3. Apply migrations and create a superuser:
    ```bash
+   docker-compose exec web python aikademiya/manage.py makemigrations
    docker-compose exec web python aikademiya/manage.py migrate
    docker-compose exec web python aikademiya/manage.py createsuperuser
    ```

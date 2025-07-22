@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 class CustomUserAdmin(UserAdmin):
     model = User
     ordering = ('email',)
-    list_display = ('email', 'role', 'is_staff', 'is_active')
-    list_filter = ('role', 'is_staff', 'is_active')
+    list_display = ('email', 'role', 'is_staff', 'is_active', 'subscribe_status')
+    list_filter = ('role', 'is_staff', 'is_active', 'subscribe_status')
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
