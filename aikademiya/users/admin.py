@@ -14,7 +14,20 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("role", "subscribe_status")}),
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "birthday",
+                    "occupation",
+                    "sex",
+                    "role",
+                    "subscribe_status",
+                )
+            },
+        ),
         (
             _("Permissions"),
             {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")},
@@ -27,7 +40,20 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "role", "subscribe_status", "is_staff", "is_active"),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "first_name",
+                    "last_name",
+                    "birthday",
+                    "occupation",
+                    "sex",
+                    "role",
+                    "subscribe_status",
+                    "is_staff",
+                    "is_active",
+                ),
             },
         ),
     )

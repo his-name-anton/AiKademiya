@@ -46,7 +46,30 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField(unique=True)
+    birthday = models.DateField(null=True, blank=True)
+    OCCUPATION_CHOICES = [
+        ('school', 'Учусь в школе'),
+        ('student', 'Студент'),
+        ('employed', 'Работаю'),
+        ('freelancer', 'Фриланс'),
+        ('unemployed', 'Не работаю'),
+        ('other', 'Другое'),
+    ]
+
+    occupation = models.CharField(
+        max_length=50,
+        choices=OCCUPATION_CHOICES,
+        null=True,
+        blank=True
+    )
+    SEX_CHOICES = [
+        ("male", "Мужской"),
+        ("female", "Женский"),
+    ]
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True)
 
     ROLE_CHOICES = [
         ("student", "Student"),
