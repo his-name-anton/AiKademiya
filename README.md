@@ -11,7 +11,7 @@ Educational course generation platform.
    Install Node dependencies and build Tailwind CSS:
    ```bash
    npm install
-   npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/tailwind.css
+   npx @tailwindcss/cli -i ./assets/css/input.css -o ./static/css/tailwind.css
    ```
 2. Run services with Docker Compose (PostgreSQL and n8n):
    ```bash
