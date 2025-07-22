@@ -52,34 +52,36 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script>
-    // Переключение иконок в зависимости от темы
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
-
-    // Установка иконки при загрузке
-    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        lightIcon.classList.remove('hidden');
-    } else {
-        document.documentElement.classList.remove('dark');
-        darkIcon.classList.remove('hidden');
-    }
-
-    // Обработчик клика
-    themeToggleBtn.addEventListener('click', function () {
-        darkIcon.classList.toggle('hidden');
-        lightIcon.classList.toggle('hidden');
-
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
+    const themeApp = {
+        data() {
+            return {
+                dark: false,
+            };
+        },
+        mounted() {
+            const stored = localStorage.getItem('theme');
+            this.dark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            this.applyTheme();
+        },
+        methods: {
+            toggle() {
+                this.dark = !this.dark;
+                this.applyTheme();
+            },
+            applyTheme() {
+                if (this.dark) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            }
         }
-    });
+    };
+    Vue.createApp(themeApp).mount('#theme-toggle');
 </script>
 </body>
 </html>
