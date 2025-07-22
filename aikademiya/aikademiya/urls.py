@@ -29,4 +29,5 @@ urlpatterns = [
     path("billing/", include("billing.urls", namespace="billing")),
     path("catalog/", include("catalog.urls", namespace="catalog")),
     path("adminpanel/", include("adminpanel.urls", namespace="adminpanel")),
+    path("api/courses/", include("courses.api_urls", namespace="courses_api")),
 ]

@@ -160,3 +160,8 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@example.com"
 
 # Redirect authenticated users to their profile page after login
 LOGIN_REDIRECT_URL = "profile"
+
+# n8n integration settings
+N8N_WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL", "http://localhost:5678/webhook")
+N8N_TIMEOUT = int(os.environ.get("N8N_TIMEOUT", 30))
+COURSE_VALIDATION_RETRY_ATTEMPTS = int(os.environ.get("COURSE_VALIDATION_RETRY_ATTEMPTS", 3))
