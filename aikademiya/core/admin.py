@@ -1,4 +1,4 @@
-from .models import User, Course, Module, Chapter, Question, Enrollment, Subscription, Payment
+from .models import User, Course, Module, Chapter, Question, Enrollment, Subscription, Payment, SubscribeStatus
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
@@ -14,14 +14,15 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("role",)}),
+        (_("Personal info"), {"fields": ("role", "subscribe_status")}),
         (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
+
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "password1", "password2", "role", "is_staff", "is_active"),
+            "fields": ("email", "password1", "password2", "role", "subscribe_status", "is_staff", "is_active"),
         }),
     )
 
@@ -36,3 +37,4 @@ admin.site.register(Question)
 admin.site.register(Enrollment)
 admin.site.register(Subscription)
 admin.site.register(Payment)
+admin.site.register(SubscribeStatus)

@@ -62,6 +62,9 @@ class SubscribeStatus(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        db_table = 'subscribe_status'
+
 
 class User(AbstractUser):
     username = None  # Удаляем username
