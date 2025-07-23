@@ -1,10 +1,12 @@
 <template>
-  <div class="bg-gray-50">
+  <main class="bg-gray-50 text-gray-900">
     <MainNavbar />
-    <HeroSection />
-    <HowItWorks />
-    <Benefits />
-  </div>
+    <div class="container mx-auto px-4 max-w-7xl">
+      <HeroSection />
+      <HowItWorks />
+      <Benefits />
+    </div>
+  </main>
 </template>
 
 <script setup>

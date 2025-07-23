@@ -1,7 +1,8 @@
 <template>
   <fwb-navbar>
     <template #logo>
-      <fwb-navbar-logo alt="AiKademiya Logo" image-url="/static/images/logo.svg" link="/">
+      <fwb-navbar-logo
+          alt="AiKademiya Logo" image-url="/static/images/logo.svg" link="/">
         AiKademiya
       </fwb-navbar-logo>
     </template>
