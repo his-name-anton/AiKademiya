@@ -21,8 +21,8 @@ async def ai_task(task_code: str, params: Dict[str, Any]) -> str:
     """Execute an AI task using configuration from the database."""
 
     _setup_django()
-    from generation.models import AITaskType, PromptTemplate, AIRequestLog
-    from generation.openai_utils import call_openai, render_template
+    from aikademiya.generation.models import AITaskType, PromptTemplate, AIRequestLog
+    from aikademiya.generation.openai_utils import call_openai, render_template
 
     task = AITaskType.objects.get(code=task_code)
     template = (

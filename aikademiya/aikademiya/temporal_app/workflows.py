@@ -130,4 +130,3 @@ class GenerateCourseWorkflow:
             "current_module": self.state.current_module,
             "current_chapter": self.state.current_chapter,
         }
-
