@@ -25,12 +25,14 @@ services:
       POSTGRES_USER: aikademiya
       POSTGRES_PASSWORD: aikademiya
       POSTGRES_HOST: db
+      TEMPORAL_ADDRESS: temporal:7233
     ports:
       - "8000:8000"
     depends_on:
       - db
     networks:
       - default
+      - temporal-network
 
   # PostgreSQL для Temporal
   postgresql:

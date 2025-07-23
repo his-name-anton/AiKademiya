@@ -75,3 +75,30 @@ async def save_course_to_db(course_data: dict) -> int:
 
     return course.id
 
+
+@activity.defn
+async def check_topic(params: dict) -> str:
+    """Нормализация темы и категоризация через ИИ"""
+    from aikademiya.courses.models import CourseCategory
+    task_code = "check_topic"
+
+    return await ai_task(task_code, params)
+
+
+@activity.defn
+async def normalize_topic(params: dict) -> str:
+    """Нормализация темы и категоризация через ИИ"""
+    from aikademiya.courses.models import CourseCategory
+    task_code = "normalize_topic"
+
+    categories = [{"id": c.id, "title": c.name} for c in CourseCategory.objects.all().order_by("id")]
+    params["categories"] = categories
+
+    raw_response = await ai_task(task_code, params)
+
+    data = json.loads(raw_response)
+    if not data.get("category_exists") and data.get("category_title"):
+        new_category, created = CourseCategory.objects.get_or_create(name=data["category_title"])
+        data["category_id"] = new_category.id
+
+    return json.dumps(data, ensure_ascii=False)

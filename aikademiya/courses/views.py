@@ -11,7 +11,7 @@ from aikademiya.temporal_app.workflows import GenerateCourseWorkflow
 
 
 async def _start_workflow(topic: str) -> str:
-    client = await Client.connect(os.getenv("TEMPORAL_ADDRESS", "localhost:7233"))
+    client = await Client.connect(os.getenv("TEMPORAL_ADDRESS", "temporal:7233"))
     handle = await client.start_workflow(
         GenerateCourseWorkflow.run,
         topic,
@@ -37,7 +37,7 @@ async def _workflow_status(workflow_id: str):
     return info
 
 
-def generate_course(request):
+def create_course(request):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
     data = json.loads(request.body or "{}")

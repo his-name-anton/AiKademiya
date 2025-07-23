@@ -4,6 +4,17 @@ from django.db import models
 from core.models import TimeStampedModel
 
 
+class CourseCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "course_categories"
+
+    def __str__(self):
+        return self.name
+
+
 class Course(TimeStampedModel):
     LEVEL_CHOICES = [
         ("beginner", "Beginner"),
@@ -17,6 +28,14 @@ class Course(TimeStampedModel):
     goal = models.TextField(blank=True)
     language = models.CharField(max_length=10, default="ru")
     is_public = models.BooleanField(default=True)
+
+    category = models.ForeignKey(
+        CourseCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="courses"
+    )
 
     def __str__(self) -> str:
         return self.title

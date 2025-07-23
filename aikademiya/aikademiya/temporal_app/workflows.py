@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 
 from temporalio import workflow
 
-from .activities import ai_task, save_course_to_db
+from .activities import ai_task, save_course_to_db, check_topic, normalize_topic
 
 
 @dataclass
@@ -37,22 +37,21 @@ class GenerateCourseWorkflow:
     async def run(self, topic: str) -> int:
         self.state.topic = topic
         self.state.status = "checking"
+
         await workflow.execute_activity(
-            ai_task,
-            "check_topic",
+            check_topic,
             {"topic": topic},
             schedule_to_close_timeout=timedelta(seconds=60),
         )
 
         norm = await workflow.execute_activity(
-            ai_task,
-            "normalize_topic",
+            normalize_topic,
             {"topic": topic},
             schedule_to_close_timeout=timedelta(seconds=60),
         )
         data = json.loads(norm)
-        self.state.normalized_topic = data.get("topic")
-        self.state.category = data.get("category")
+        self.state.normalized_topic = data.get("course_title")
+        self.state.category = data.get("category_id")
 
         outline_text = await workflow.execute_activity(
             ai_task,
