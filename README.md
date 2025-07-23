@@ -12,6 +12,9 @@ Educational course generation platform.
    ```bash
    npm install
    npx @tailwindcss/cli -i ./assets/css/input.css -o ./static/css/tailwind.css
+   cd frontend && npm install
+   npm run build
+   cd ..
    ```
 2. Run services with Docker Compose (PostgreSQL):
    ```bash

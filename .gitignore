@@ -211,3 +211,6 @@ node_modules/
 
 
 static/css/tailwind.css
+# Frontend
+frontend/node_modules/
+static/frontend/
