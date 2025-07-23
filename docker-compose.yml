@@ -1,13 +1,20 @@
-version: '3.9'
 services:
+  # PostgreSQL для Django
   db:
     image: postgres:15
+    container_name: django-db
     environment:
       POSTGRES_DB: aikademiya
       POSTGRES_USER: aikademiya
       POSTGRES_PASSWORD: aikademiya
     ports:
       - "5432:5432"
+    volumes:
+      - aikademiya_pgdata:/var/lib/postgresql/data
+    networks:
+      - default
+
+  # Django-приложение
   web:
     build: .
     command: python aikademiya/manage.py runserver 0.0.0.0:8000
@@ -18,7 +25,74 @@ services:
       POSTGRES_USER: aikademiya
       POSTGRES_PASSWORD: aikademiya
       POSTGRES_HOST: db
+      TEMPORAL_ADDRESS: temporal:7233
     ports:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - default
+      - temporal-network
+
+  # PostgreSQL для Temporal
+  postgresql:
+    image: postgres:12
+    container_name: temporal-postgres
+    environment:
+      POSTGRES_DB: temporal
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+    volumes:
+      - temporal_pgdata:/var/lib/postgresql/data
+    networks:
+      - temporal-network
+
+  # Temporal server
+  temporal:
+    image: temporalio/auto-setup:1.27.2
+    container_name: temporal
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: temporal
+      POSTGRES_SEEDS: postgresql
+    depends_on:
+      - postgresql
+    ports:
+      - "7233:7233"
+    networks:
+      - temporal-network
+
+  # Temporal CLI
+  temporal-admin-tools:
+    image: temporalio/admin-tools:1.27
+    container_name: temporal-admin-tools
+    environment:
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+    depends_on:
+      - temporal
+    networks:
+      - temporal-network
+
+  # Temporal UI
+  temporal-ui:
+    image: temporalio/ui:2.37.2
+    container_name: temporal-ui
+    ports:
+      - "8080:8080"
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:8080
+    depends_on:
+      - temporal
+    networks:
+      - temporal-network
+
+volumes:
+  aikademiya_pgdata:
+  temporal_pgdata:
+
+networks:
+  temporal-network:
+    driver: bridge
