@@ -1,56 +1,24 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="bg-gray-50">
-  <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4">Создавай и проходи курсы с помощью ИИ</h1>
-    <p class="text-xl text-gray-600 mb-8">Генерация курсов по любой теме. Быстро. Умно. Масштабируемо.</p>
-    <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <a href="/generate/" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">Сгенерировать курс</a>
-      <a href="/learn/" class="px-6 py-3 border border-gray-300 text-gray-800 rounded-xl font-medium hover:bg-gray-100 transition">Посмотреть каталог</a>
-    </div>
-  </div>
+<!-- templates/index.html -->
 
-  <div class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-gray-900 text-center mb-6">Как это работает</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-      <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition">
-        <h3 class="text-xl font-semibold mb-2">1. Укажи тему</h3>
-        <p class="text-gray-600">Выбери тему, уровень и цели — наш ИИ создаст структуру курса.</p>
-      </div>
-      <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition">
-        <h3 class="text-xl font-semibold mb-2">2. Пройди первую главу</h3>
-        <p class="text-gray-600">Оцени качество на демо — теория и тест доступны сразу.</p>
-      </div>
-      <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition">
-        <h3 class="text-xl font-semibold mb-2">3. Заведи аккаунт</h3>
-        <p class="text-gray-600">Сохраняй прогресс, проходи курсы, открывай всё с подпиской.</p>
-      </div>
-    </div>
-  </div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>AiKademiya</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <div id="app"></div>
 
-  <div class="bg-white py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Преимущества платформы</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div>
-          <h3 class="text-lg font-semibold text-blue-600 mb-2">Полная автоматизация</h3>
-          <p class="text-gray-600">ИИ сам создаёт оглавление, теорию и тесты — без участия методиста.</p>
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold text-blue-600 mb-2">Мгновенный результат</h3>
-          <p class="text-gray-600">Получай курс через 1–2 минуты после запроса.</p>
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold text-blue-600 mb-2">Русскоязычный фокус</h3>
-          <p class="text-gray-600">Поддержка ЮKassa, Яндекс ID, VK — всё локализовано.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% include "includes/subscription_cards.html" %}
+{% if debug %}
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+    <script type="module" src="http://localhost:5173/main.js"></script>
+{% else %}
+{% load static %}
+    <script type="module" src="{% static 'frontend/main.js' %}"></script>
+{% endif %}
+</body>
+</html>
 
 
-{% endblock %}
 

@@ -1,4 +1,8 @@
 import { createApp } from 'vue'
-import GeneratePage from './components/GeneratePage.vue'
+import App from './App.vue'
+import router from './router'
+import './assets/css/input.css'
 
-createApp(GeneratePage).mount('#app')
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
