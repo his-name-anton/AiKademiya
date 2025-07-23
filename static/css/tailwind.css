@@ -2091,6 +2091,9 @@
   .bg-orange-300 {
     background-color: var(--color-orange-300);
   }
+  .bg-red-50 {
+    background-color: var(--color-red-50);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -2496,6 +2499,9 @@
   }
   .text-red-600 {
     color: var(--color-red-600);
+  }
+  .text-red-800 {
+    color: var(--color-red-800);
   }
   .text-white {
     color: var(--color-white);

@@ -8,11 +8,4 @@
         чтобы начать генерацию курса.</p>
 </div>
 {% endif %}
-{% if debug %}
-<script type="module" src="http://localhost:5173/@vite/client"></script>
-<script type="module" src="http://localhost:5173/main.js"></script>
-{% else %}
-{% load static %}
-<script type="module" src="{% static 'frontend/main.js' %}"></script>
-{% endif %}
 {% endblock %}
