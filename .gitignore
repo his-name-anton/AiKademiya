@@ -208,3 +208,6 @@ __marimo__/
 
 # Node.js dependencies
 node_modules/
+
+
+static/css/tailwind.css
