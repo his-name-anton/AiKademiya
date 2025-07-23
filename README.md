@@ -77,10 +77,10 @@ Web UI on port `8088`.
 The worker listens on the `course-task-queue` queue. New course generation can be
 triggered via the API endpoints:
 
-- `POST /courses/api/generate/` with JSON `{"topic": "..."}`
-- `GET  /courses/api/status/<workflow_id>/`
-- `POST /courses/api/confirm/<workflow_id>/` to start generation after review
-- `POST /courses/api/next/<workflow_id>/` to request the next chapter
+- `POST /api/create_course/` with JSON `{"topic": "..."}`
+- `GET  /api/status/<workflow_id>/`
+- `POST /api/confirm/<workflow_id>/` to start generation after review
+- `POST /api/next/<workflow_id>/` to request the next chapte
 
 These return the workflow ID and allow checking its status and result.
 These return the workflow ID and allow checking progress or driving the

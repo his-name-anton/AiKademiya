@@ -130,7 +130,22 @@ document.getElementById("start-button").addEventListener("click", async () => {
 
         const data = await response.json();
         // например, редиректим или показываем статус
-        window.location.href = `/courses/api/status/${data.workflow_id}/`;
+        // проверяем статус, чтобы обработать возможный таймаут
+        try {
+            const statusResp = await fetch(`/api/status/${data.workflow_id}/`);
+            if (statusResp.ok) {
+                window.location.href = `/api/status/${data.workflow_id}/`;
+                return;
+            }
+            const info = await statusResp.json().catch(() => ({}));
+            if (statusResp.status === 504 || info.error === "timeout") {
+                alert("Превышено время ожидания. Попробуйте позже.");
+                return;
+            }
+            throw new Error("Не удалось получить статус");
+        } catch (e) {
+            alert("Ошибка при проверке статуса: " + e.message);
+        }
     } catch (error) {
         alert("Ошибка: " + error.message);
     }

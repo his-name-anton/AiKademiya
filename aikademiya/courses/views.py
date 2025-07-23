@@ -6,6 +6,7 @@ from uuid import uuid4
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from temporalio.client import Client
+from temporalio.service import RPCError, RPCStatusCode
 
 from aikademiya.temporal_app.workflows import GenerateCourseWorkflow
 
@@ -30,7 +31,13 @@ async def _signal_workflow(workflow_id: str, signal: str, payload) -> None:
 async def _workflow_status(workflow_id: str):
     client = await Client.connect(os.getenv("TEMPORAL_ADDRESS", "localhost:7233"))
     handle = client.get_workflow_handle(workflow_id)
-    info = await handle.query("get_state")
+    try:
+        info = await handle.query("get_state")
+    except RPCError as err:
+        if err.status == RPCStatusCode.DEADLINE_EXCEEDED:
+            return {"error": "timeout"}
+        raise
+
     if info.get("status") == "completed":
         result = await handle.result()
         info["result"] = result
@@ -50,6 +57,8 @@ def create_course(request):
 
 def course_status(request, workflow_id: str):
     info = asyncio.run(_workflow_status(workflow_id))
+    if isinstance(info, dict) and info.get("error") == "timeout":
+        return JsonResponse(info, status=504)
     return JsonResponse(info)
 
 
