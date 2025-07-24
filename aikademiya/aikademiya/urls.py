@@ -18,10 +18,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from core.views import VueAppView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', VueAppView.as_view()),
+    
+    # API Documentation
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    # API v1 endpoints
+    path("api/v1/auth/", include("users.api_urls")),
+    path("api/v1/courses/", include("courses.api_urls")),
+    path("api/v1/quizzes/", include("quizzes.api_urls")),
+    
+    # Legacy URLs (keep for backward compatibility)
     path("", include("core.urls")),
     path("", include("users.urls")),
     path("api/", include("courses.urls", namespace="courses")),
