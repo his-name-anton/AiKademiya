@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, TemplateView
 from django.conf import settings
+from core.views import VueAppView
 
 from .forms import CustomUserCreationForm
 
@@ -25,18 +26,22 @@ class SignUpView(CreateView):
                 fail_silently=True,
             )
 
-        return redirect("profile")
+        # Redirect to Vue app profile page
+        return redirect("/#/profile")
 
 
-class ForgotPasswordView(TemplateView):
-    template_name = "registration/forgot-password.html"
+class ForgotPasswordView(VueAppView):
+    """Use Vue app for forgot password page"""
+    pass
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = "profile.html"
+class ProfileView(LoginRequiredMixin, VueAppView):
+    """Use Vue app for profile page"""
+    pass
 
 
-class SettingsView(LoginRequiredMixin, TemplateView):
-    template_name = "settings.html"
+class SettingsView(LoginRequiredMixin, VueAppView):
+    """Use Vue app for settings page"""
+    pass
 
 

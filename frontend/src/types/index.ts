@@ -2,11 +2,31 @@
 export interface User {
   id: number;
   email: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
+  first_name?: string;
+  last_name?: string;
   avatar?: string;
   isActive: boolean;
   dateJoined: string;
+  date_joined?: string;
+  // Extended profile fields
+  country?: string;
+  city?: string;
+  address?: string;
+  phone?: string;
+  birth_date?: string;
+  birthDate?: string;
+  organization?: string;
+  role?: string;
+  department?: string;
+  zip_code?: string;
+  zipCode?: string;
+  occupation?: string;
+  // Preferences
+  language?: string;
+  timezone?: string;
 }
 
 export interface AuthTokens {
@@ -21,9 +41,17 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   email: string;
+  username: string;
   password: string;
+  password_confirm: string;
   firstName?: string;
   lastName?: string;
+}
+
+// Password change
+export interface PasswordChangeData {
+  oldPassword: string;
+  newPassword: string;
 }
 
 // Course related types
@@ -38,6 +66,12 @@ export interface Course {
   updatedAt: string;
   author: User;
   modules: CourseModule[];
+  // For learning page
+  image?: string;
+  lessons_count?: number;
+  completed_lessons?: number;
+  estimated_duration?: number;
+  lessons?: Lesson[];
 }
 
 export interface CourseModule {
@@ -55,6 +89,7 @@ export interface Lesson {
   order: number;
   type: LessonType;
   duration?: number;
+  completed?: boolean;
 }
 
 export type CourseDifficulty = 'beginner' | 'intermediate' | 'advanced';
@@ -80,6 +115,7 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  errors?: Record<string, string[]>;
 }
 
 export interface PaginatedResponse<T> {
@@ -93,6 +129,26 @@ export interface PaginatedResponse<T> {
 export interface ValidationError {
   field: string;
   message: string;
+}
+
+// Settings
+export interface NotificationSettings {
+  key: string;
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
+export interface EmailSettings {
+  key: string;
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
+export interface LanguageSettings {
+  language: string;
+  timezone: string;
 }
 
 // Navigation
