@@ -214,3 +214,7 @@ static/css/tailwind.css
 # Frontend
 frontend/node_modules/
 static/frontend/
+static/
+.idea/
+project_documentation.html
+project_tree.py
