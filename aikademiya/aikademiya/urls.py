@@ -17,12 +17,26 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from core.views import VueAppView
+from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
+def api_root(request):
+    """API Root - показывает доступные endpoints"""
+    return JsonResponse({
+        'message': 'AiKademiya API',
+        'version': '1.0.0',
+        'endpoints': {
+            'auth': '/api/v1/auth/',
+            'courses': '/api/v1/courses/',
+            'quizzes': '/api/v1/quizzes/',
+            'admin': '/admin/',
+            'docs': '/api/schema/swagger-ui/',
+        }
+    })
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', VueAppView.as_view()),
+    path('api/', api_root, name='api-root'),
     
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -35,8 +49,6 @@ urlpatterns = [
     path("api/v1/quizzes/", include("quizzes.api_urls")),
     
     # Legacy URLs (keep for backward compatibility)
-    path("", include("core.urls")),
-    path("", include("users.urls")),
     path("api/", include("courses.urls", namespace="courses")),
     path("quizzes/", include("quizzes.urls", namespace="quizzes")),
     path("progress/", include("progress.urls", namespace="progress")),

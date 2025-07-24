@@ -8,9 +8,9 @@ export default defineConfig(({mode}) => ({
         vue(),
         tailwindcss()
     ],
-    base: mode === 'development' ? '/' : '/static/frontend/',
+    base: '/',
     build: {
-        outDir: resolve(__dirname, '../static/frontend'),
+        outDir: resolve(__dirname, 'dist'),
         emptyOutDir: true,
         manifest: true,
         rollupOptions: {
@@ -23,11 +23,16 @@ export default defineConfig(({mode}) => ({
         },
     },
     server: {
-        host: true,
+        host: '0.0.0.0', // Важно для Docker
         port: 5173,
+        watch: {
+            usePolling: true, // Важно для Docker на некоторых системах
+        },
         proxy: {
             '/api': {
-                target: 'http://localhost:8000',
+                target: process.env.NODE_ENV === 'development' 
+                    ? 'http://web:8000'  // Docker service name
+                    : 'http://localhost:8000',
                 changeOrigin: true,
             },
         },
