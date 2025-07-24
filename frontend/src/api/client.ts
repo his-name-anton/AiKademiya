@@ -54,17 +54,27 @@ class ApiClient {
       async (error) => {
         const authStore = useAuthStore();
         
-        if (error.response?.status === 401) {
+        // Only handle 401 errors for authenticated requests
+        if (error.response?.status === 401 && error.config?.headers?.Authorization) {
           // Try to refresh token
-          const refreshed = await authStore.refreshToken();
+          const refreshed = await authStore.refreshTokens();
           if (refreshed && error.config) {
             // Retry original request with new token
             return this.client.request(error.config);
           } else {
             // Logout user if refresh failed
-            authStore.logout();
-            window.location.href = '/login';
+            await authStore.logout();
+            // Only redirect if we're not already on login page
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
+        } else if (error.response?.status === 401) {
+          // 401 without Authorization header - user is not authenticated
+          // Don't redirect, just let the error propagate
+        } else if (!error.response) {
+          // Network error - don't logout user for network issues
+          console.error('Network error:', error.message);
         }
 
         return Promise.reject(error);

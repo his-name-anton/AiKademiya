@@ -23,7 +23,7 @@ export function useAuth() {
       toast.success('Добро пожаловать!');
       
       // Redirect after successful login
-      const redirect = redirectTo || '/dashboard';
+      const redirect = redirectTo || '/generate';
       await router.push(redirect);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Ошибка входа';
@@ -39,7 +39,7 @@ export function useAuth() {
       toast.success('Регистрация успешна! Добро пожаловать!');
       
       // Redirect after successful registration
-      const redirect = redirectTo || '/dashboard';
+      const redirect = redirectTo || '/generate';
       await router.push(redirect);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Ошибка регистрации';

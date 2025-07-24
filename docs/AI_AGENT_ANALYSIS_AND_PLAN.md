@@ -7,6 +7,8 @@
 4. [План реализации](#план-реализации)
 5. [Технический стек](#технический-стек)
 6. [Этапы разработки](#этапы-разработки)
+7. [Система управления промптами](#система-управления-промптами)
+8. [Инструменты для образовательного контента](#инструменты-для-образовательного-контента)
 
 ---
 
@@ -45,9 +47,9 @@ Temporal AI Agent - это демонстрационный проект, пок
 - Валидация входных данных
 
 #### Tools (`tools/`)
-- Конкретные функциональности (поиск рейсов, финансовые операции и т.д.)
+- Конкретные функциональности (генерация контента, создание тестов и т.д.)
 - Простые Python функции
-- Подключение к внешним API
+- Подключение к внешним API и образовательным сервисам
 
 #### Goals (`goals/`)
 - Определение целей агентов
@@ -57,9 +59,10 @@ Temporal AI Agent - это демонстрационный проект, пок
 ### 3. Архитектурные паттерны:
 
 ```
-Пользователь → API → Workflow → Activity → Tool → Внешний сервис
-                ↑         ↓         ↓       ↓
-            Frontend   Signal    LLM    Validation
+Пользователь → Vue Frontend → Django API → Temporal Workflow → Activity → Tool → Внешний сервис
+                     ↑              ↑            ↓         ↓       ↓
+                WebSocket      Django Admin   Signal    LLM    Validation
+                              (Prompt Mgmt)
 ```
 
 ---
@@ -75,7 +78,7 @@ Temporal AI Agent - это демонстрационный проект, пок
 - **Создание курсов**: Структурированные обучающие программы
 - **Практические задания**: Интерактивные упражнения с проверкой
 - **Адаптивность**: Подстройка под уровень пользователя
-- **Мультиформатность**: Текст, схемы, примеры кода
+- **Мультиформатность**: Текст, схемы, примеры кода, интерактивные элементы
 
 #### 2. Интерактивность
 - **Диалоговый интерфейс**: Сбор требований к курсу
@@ -87,6 +90,12 @@ Temporal AI Agent - это демонстрационный проект, пок
 - **Стиль обучения**: Теория, практика, смешанный
 - **Темп обучения**: Интенсивный, умеренный, неспешный
 - **Область применения**: Академическая, корпоративная, личностный рост
+
+#### 4. Система управления промптами
+- **Админ-панель Django**: Управление промптами и их версиями
+- **Версионирование**: Отслеживание изменений промптов
+- **A/B тестирование**: Сравнение эффективности разных промптов
+- **История использования**: Анализ связок модель + промпт для конкретных задач
 
 ### Нефункциональные требования:
 
@@ -112,140 +121,563 @@ Temporal AI Agent - это демонстрационный проект, пок
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │────│   API Gateway    │────│   Workflows     │
-│   (React/Vue)   │    │   (FastAPI)      │    │   (Temporal)    │
+│   Vue Frontend  │────│   Django API     │────│   Workflows     │
+│   + Tailwind    │    │   + Admin Panel  │    │   (Temporal)    │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                        │
-                              ┌─────────────────────────┼─────────────────────────┐
-                              │                         │                         │
-                    ┌─────────▼─────────┐    ┌─────────▼─────────┐    ┌─────────▼─────────┐
-                    │   Content Gen     │    │   Knowledge       │    │   Assessment      │
-                    │   Activities      │    │   Activities      │    │   Activities      │
-                    └───────────────────┘    └───────────────────┘    └───────────────────┘
-                              │                         │                         │
-                    ┌─────────▼─────────┐    ┌─────────▼─────────┐    ┌─────────▼─────────┐
-                    │   LLM Tools       │    │   Knowledge Base  │    │   Quiz/Test       │
-                    │   (GPT/Claude)    │    │   Tools           │    │   Tools           │
-                    └───────────────────┘    └───────────────────┘    └───────────────────┘
+                                │                        │
+                    ┌───────────▼───────────┐            │
+                    │   Prompt Management   │            │
+                    │   + Version Control   │            │
+                    │   + Analytics DB      │            │
+                    └───────────────────────┘            │
+                                                         │
+                    ┌─────────────────────────┼─────────────────────────┐
+                    │                         │                         │
+          ┌─────────▼─────────┐    ┌─────────▼─────────┐    ┌─────────▼─────────┐
+          │   Content Gen     │    │   Knowledge       │    │   Assessment      │
+          │   Activities      │    │   Activities      │    │   Activities      │
+          └───────────────────┘    └───────────────────┘    └───────────────────┘
+                    │                         │                         │
+          ┌─────────▼─────────┐    ┌─────────▼─────────┐    ┌─────────▼─────────┐
+          │  Advanced Tools   │    │   Knowledge Base  │    │   Interactive     │
+          │  (See section 8)  │    │   Tools           │    │   Assessment      │
+          └───────────────────┘    └───────────────────┘    └───────────────────┘
 ```
 
 ### Основные компоненты:
 
-#### 1. Learning Material Workflow (`workflows/learning_workflow.py`)
+#### 1. Django Backend (`django_backend/`)
+```python
+# models.py
+class PromptTemplate(models.Model):
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=100)
+    template = models.TextField()
+    version = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+class PromptExecution(models.Model):
+    prompt_template = models.ForeignKey(PromptTemplate, on_delete=CASCADE)
+    model_used = models.CharField(max_length=100)
+    input_params = models.JSONField()
+    output_result = models.TextField()
+    execution_time = models.FloatField()
+    quality_score = models.FloatField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+#### 2. Vue Frontend (`vue_frontend/`)
+```vue
+<!-- CourseBuilder.vue -->
+<template>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="container mx-auto px-4 py-8">
+      <CourseCreationWizard 
+        @course-created="handleCourseCreated"
+        :active-session="activeSession"
+      />
+      <LessonViewer 
+        v-if="currentLesson"
+        :lesson="currentLesson"
+        @next-lesson="generateNextLesson"
+      />
+    </div>
+  </div>
+</template>
+```
+
+#### 3. Temporal Workflows с управляемыми промптами
 ```python
 @workflow.defn
 class LearningMaterialWorkflow:
-    """Основной workflow для генерации обучающих материалов"""
+    """Workflow для генерации обучающих материалов с управляемыми промптами"""
     
-    def __init__(self):
-        self.course_structure = None
-        self.current_lesson = 0
-        self.user_profile = {}
-        self.generated_content = []
-        self.assessment_results = []
+    async def generate_with_tracked_prompts(self, task_type: str, params: dict):
+        # Получение активного промпта из Django
+        prompt_config = await workflow.execute_activity(
+            get_active_prompt_template,
+            args=[task_type],
+            schedule_to_close_timeout=timedelta(seconds=30)
+        )
+        
+        # Выполнение задачи с отслеживанием
+        result = await workflow.execute_activity(
+            execute_llm_with_tracking,
+            args=[prompt_config, params],
+            schedule_to_close_timeout=timedelta(minutes=5)
+        )
+        
+        return result
 ```
-
-#### 2. Goals для обучения (`goals/education.py`)
-- `goal_create_course` - Создание полного курса
-- `goal_generate_lesson` - Генерация отдельного урока  
-- `goal_create_exercise` - Создание практических заданий
-- `goal_assess_knowledge` - Оценка знаний
-
-#### 3. Tools для генерации контента (`tools/education/`)
-- `content_generator.py` - Генерация текстового контента
-- `exercise_creator.py` - Создание упражнений
-- `knowledge_assessor.py` - Оценка знаний
-- `curriculum_planner.py` - Планирование учебной программы
-
-#### 4. Activities (`activities/education_activities.py`)
-- `generate_course_outline` - Создание структуры курса
-- `generate_lesson_content` - Генерация контента урока
-- `create_practical_exercise` - Создание практических заданий
-- `validate_learning_progress` - Валидация прогресса обучения
 
 ---
 
 ## 🛠️ Технический стек
 
 ### Backend
-- **Temporal**: Оркестрация workflow и управление состоянием
-- **Python 3.10+**: Основной язык разработки
-- **FastAPI**: REST API сервер
-- **LiteLLM**: Интеграция с различными LLM провайдерами
-- **PostgreSQL/MongoDB**: Хранение пользовательских данных и контента
-- **Redis**: Кэширование и сессии
+- **Django 5.0**: Основной веб-фреймворк и ORM
+- **Django REST Framework**: API эндпоинты
+- **Django Admin**: Управление промптами и аналитика
+- **Temporal Python SDK**: Оркестрация workflow
+- **PostgreSQL**: Основная база данных
+- **Redis**: Кэширование и очереди сообщений
+- **Celery**: Асинхронные задачи (опционально, вместе с Temporal)
 
 ### Frontend
-- **React/TypeScript**: Интерфейс пользователя
-- **Tailwind CSS**: Стилизация
-- **React Query**: Управление состоянием API
+- **Vue 3**: Реактивный фронтенд фреймворк
+- **TypeScript**: Типизация для лучшей поддержки разработки
+- **Tailwind CSS**: Utility-first CSS фреймворк
+- **Pinia**: Управление состоянием
+- **Vue Router**: Маршрутизация
+- **WebSocket**: Реальное время взаимодействие с Temporal workflows
 
 ### AI/ML
-- **OpenAI GPT-4**: Основная LLM для генерации контента
-- **Anthropic Claude**: Альтернативная LLM
-- **LangChain**: Обработка и структурирование промптов
+- **LiteLLM**: Унифицированный интерфейс для различных LLM
+- **OpenAI GPT-4o**: Основная модель для генерации контента
+- **Anthropic Claude**: Альтернативная модель
+- **Local Models**: Поддержка локальных моделей через Ollama
 
 ### DevOps
-- **Docker**: Контейнеризация
-- **Docker Compose**: Локальная разработка
+- **Docker & Docker Compose**: Контейнеризация
 - **Poetry**: Управление зависимостями Python
+- **Vite**: Сборка фронтенда
+- **GitHub Actions**: CI/CD
 
 ---
 
 ## 📅 Этапы разработки
 
-### Этап 1: Базовая инфраструктура (1-2 недели)
-1. **Настройка окружения**
-   - Клонирование и адаптация temporal-ai-agent
-   - Настройка Docker окружения
-   - Конфигурация Temporal Server
+### Этап 1: Базовая инфраструктура (2-3 недели)
+1. **Django Backend Setup**
+   - Создание Django проекта
+   - Настройка моделей для промптов и аналитики
+   - Django Admin для управления промптами
+   - Базовые API эндпоинты
 
-2. **Базовый workflow**
-   - Создание `LearningMaterialWorkflow`
-   - Реализация базовых signals (start_course, generate_lesson)
-   - Интеграция с LLM
+2. **Vue Frontend Setup**
+   - Создание Vue 3 + TypeScript проекта
+   - Настройка Tailwind CSS
+   - Базовые компоненты UI
 
-### Этап 2: Основная функциональность (2-3 недели)
-1. **Goals и Tools**
-   - Реализация `education_goals.py`
-   - Создание базовых tools для генерации контента
-   - Интеграция с LLM для создания курсов
+3. **Temporal Integration**
+   - Адаптация temporal-ai-agent архитектуры
+   - Интеграция с Django через API
+   - Базовый workflow для генерации контента
 
-2. **Activities**
-   - `generate_course_outline`
-   - `generate_lesson_content`
-   - `create_practical_exercise`
+### Этап 2: Система управления промптами (2-3 недели)
+1. **Prompt Management**
+   - Модели для версионирования промптов
+   - Django Admin интерфейс для редактирования
+   - API для получения активных промптов
 
-3. **API эндпоинты**
-   - CRUD операции для курсов
-   - Эндпоинты для взаимодействия с workflow
+2. **Analytics & Tracking**
+   - Модели для отслеживания выполнения
+   - Сбор метрик качества
+   - Дашборд для анализа эффективности
 
-### Этап 3: Продвинутые функции (2-3 недели)
-1. **Персонализация**
-   - Профилирование пользователей
-   - Адаптивная генерация контента
-   - Система рекомендаций
+3. **A/B Testing Framework**
+   - Система для тестирования разных промптов
+   - Автоматическое переключение между версиями
+   - Статистический анализ результатов
 
-2. **Оценка знаний**
-   - Создание тестов и квизов
-   - Анализ ответов пользователей
-   - Генерация отчетов по прогрессу
+### Этап 3: Основная функциональность (3-4 недели)
+1. **Расширенные инструменты генерации**
+   - Все инструменты из раздела 8
+   - Интеграция с внешними API
+   - Валидация и постобработка контента
 
-3. **Улучшенный UI**
+2. **Vue Components**
    - Интерактивный редактор курсов
-   - Визуализация прогресса
-   - Система уведомлений
+   - Превью сгенерированного контента
+   - Система прогресса и уведомлений
 
-### Этап 4: Оптимизация и масштабирование (1-2 недели)
-1. **Производительность**
-   - Кэширование часто используемого контента
-   - Оптимизация LLM запросов
-   - Асинхронная обработка
+3. **Real-time взаимодействие**
+   - WebSocket подключение к Temporal
+   - Live updates генерации контента
+   - Интерактивная обратная связь
 
-2. **Мониторинг**
-   - Логирование и метрики
-   - Отслеживание качества генерируемого контента
-   - Аналитика использования
+### Этап 4: Продвинутые функции (2-3 недели)
+1. **Персонализация и адаптация**
+   - Система профилей пользователей
+   - Адаптивная генерация контента
+   - Рекомендательная система
+
+2. **Аналитика и оптимизация**
+   - Дашборд для анализа использования
+   - Автоматическая оптимизация промптов
+   - Отчеты по качеству контента
+
+---
+
+## 🎛️ Система управления промптами
+
+### Django Models для промптов
+
+```python
+# prompt_management/models.py
+class PromptCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    
+class PromptTemplate(models.Model):
+    PROMPT_TYPES = [
+        ('course_generation', 'Генерация курса'),
+        ('lesson_creation', 'Создание урока'),
+        ('exercise_generation', 'Генерация упражнений'),
+        ('content_review', 'Проверка контента'),
+        ('personalization', 'Персонализация'),
+    ]
+    
+    name = models.CharField(max_length=200)
+    category = models.ForeignKey(PromptCategory, on_delete=models.CASCADE)
+    prompt_type = models.CharField(max_length=50, choices=PROMPT_TYPES)
+    template = models.TextField()
+    version = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=False)
+    model_compatibility = models.JSONField(default=list)  # ['gpt-4', 'claude-3']
+    parameters_schema = models.JSONField(default=dict)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+class PromptVersion(models.Model):
+    template = models.ForeignKey(PromptTemplate, on_delete=models.CASCADE)
+    version_number = models.CharField(max_length=50)
+    changes_description = models.TextField()
+    performance_metrics = models.JSONField(default=dict)
+    
+class PromptExecution(models.Model):
+    template = models.ForeignKey(PromptTemplate, on_delete=models.CASCADE)
+    model_used = models.CharField(max_length=100)
+    input_parameters = models.JSONField()
+    execution_context = models.JSONField()  # пользователь, сессия, etc
+    output_result = models.TextField()
+    execution_time_ms = models.IntegerField()
+    token_usage = models.JSONField(default=dict)
+    quality_metrics = models.JSONField(default=dict)
+    user_feedback = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+### Django Admin для управления промптами
+
+```python
+# prompt_management/admin.py
+@admin.register(PromptTemplate)
+class PromptTemplateAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category', 'prompt_type', 'version', 'is_active', 'created_at']
+    list_filter = ['category', 'prompt_type', 'is_active', 'model_compatibility']
+    search_fields = ['name', 'template']
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('name', 'category', 'prompt_type', 'is_active')
+        }),
+        ('Содержимое', {
+            'fields': ('template', 'parameters_schema'),
+            'classes': ('wide',)
+        }),
+        ('Конфигурация', {
+            'fields': ('version', 'model_compatibility'),
+        })
+    )
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        # Добавление JavaScript редактора для промптов
+        form.base_fields['template'].widget = admin.widgets.AdminTextareaWidget(
+            attrs={'rows': 20, 'cols': 100, 'class': 'vLargeTextField'}
+        )
+        return form
+
+@admin.register(PromptExecution)
+class PromptExecutionAdmin(admin.ModelAdmin):
+    list_display = ['template', 'model_used', 'execution_time_ms', 'created_at']
+    list_filter = ['model_used', 'template__prompt_type', 'created_at']
+    readonly_fields = ['created_at']
+    
+    def has_add_permission(self, request):
+        return False  # Только чтение для логов выполнения
+```
+
+### API для получения промптов
+
+```python
+# prompt_management/api.py
+class PromptTemplateViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PromptTemplateSerializer
+    
+    @action(detail=False, methods=['get'])
+    def active_prompt(self, request):
+        """Получение активного промпта для типа задачи"""
+        prompt_type = request.query_params.get('type')
+        model = request.query_params.get('model', 'gpt-4')
+        
+        template = PromptTemplate.objects.filter(
+            prompt_type=prompt_type,
+            is_active=True,
+            model_compatibility__contains=[model]
+        ).first()
+        
+        if template:
+            return Response(PromptTemplateSerializer(template).data)
+        return Response({'error': 'No active template found'}, status=404)
+    
+    @action(detail=True, methods=['post'])
+    def execute(self, request, pk=None):
+        """Выполнение промпта с отслеживанием"""
+        template = self.get_object()
+        
+        # Логика выполнения промпта
+        execution = PromptExecution.objects.create(
+            template=template,
+            model_used=request.data.get('model'),
+            input_parameters=request.data.get('parameters'),
+            execution_context=request.data.get('context', {})
+        )
+        
+        # Запуск задачи выполнения
+        task_id = execute_prompt_task.delay(execution.id)
+        
+        return Response({
+            'execution_id': execution.id,
+            'task_id': task_id
+        })
+```
+
+---
+
+## 🧰 Инструменты для образовательного контента
+
+### 1. Базовые инструменты генерации
+
+```python
+# tools/content_generation/
+class CourseStructureGenerator:
+    """Генератор структуры курса с учетом педагогических принципов"""
+    
+    async def generate_course_outline(self, topic: str, user_profile: dict) -> dict:
+        return {
+            "course_title": "...",
+            "modules": [...],
+            "learning_path": [...],
+            "estimated_duration": "...",
+            "difficulty_progression": [...]
+        }
+
+class LessonContentGenerator:
+    """Генератор контента уроков с различными форматами"""
+    
+    async def create_interactive_lesson(self, lesson_data: dict) -> dict:
+        return {
+            "content_blocks": [...],
+            "interactive_elements": [...],
+            "knowledge_checks": [...],
+            "multimedia_suggestions": [...]
+        }
+```
+
+### 2. Инструменты создания упражнений
+
+```python
+class ExerciseGenerator:
+    """Создание различных типов упражнений"""
+    
+    async def create_coding_exercise(self, topic: str, difficulty: str) -> dict:
+        return {
+            "problem_statement": "...",
+            "starter_code": "...",
+            "test_cases": [...],
+            "hints": [...],
+            "solution_explanation": "..."
+        }
+    
+    async def create_quiz(self, lesson_content: str) -> dict:
+        return {
+            "questions": [...],
+            "explanations": [...],
+            "difficulty_levels": [...]
+        }
+```
+
+### 3. Инструменты анализа и персонализации
+
+```python
+class LearningAnalyzer:
+    """Анализ прогресса и адаптация контента"""
+    
+    async def analyze_user_progress(self, user_data: dict) -> dict:
+        return {
+            "knowledge_gaps": [...],
+            "learning_speed": "...",
+            "preferred_formats": [...],
+            "recommendations": [...]
+        }
+    
+    async def personalize_content(self, content: dict, user_profile: dict) -> dict:
+        return {
+            "adapted_content": "...",
+            "personalization_notes": [...],
+            "difficulty_adjustments": [...]
+        }
+```
+
+### 4. Инструменты мультимедиа контента
+
+```python
+class MultimediaContentGenerator:
+    """Генерация мультимедийного контента"""
+    
+    async def generate_diagram_description(self, concept: str) -> dict:
+        """Создание описаний для генерации диаграмм"""
+        return {
+            "diagram_type": "flowchart|mindmap|sequence",
+            "elements": [...],
+            "connections": [...],
+            "mermaid_code": "...",
+            "description": "..."
+        }
+    
+    async def create_code_examples(self, concept: str, language: str) -> dict:
+        return {
+            "examples": [...],
+            "explanations": [...],
+            "common_mistakes": [...],
+            "best_practices": [...]
+        }
+```
+
+### 5. Инструменты качества и валидации
+
+```python
+class ContentValidator:
+    """Валидация и улучшение качества контента"""
+    
+    async def validate_educational_content(self, content: dict) -> dict:
+        return {
+            "quality_score": 0.95,
+            "issues_found": [...],
+            "suggestions": [...],
+            "readability_score": 0.88
+        }
+    
+    async def check_content_accuracy(self, content: str, topic: str) -> dict:
+        return {
+            "accuracy_score": 0.92,
+            "fact_check_results": [...],
+            "source_recommendations": [...]
+        }
+```
+
+### 6. Инструменты геймификации
+
+```python
+class GamificationTools:
+    """Создание игровых элементов для обучения"""
+    
+    async def create_learning_game(self, lesson_content: dict) -> dict:
+        return {
+            "game_type": "quiz|puzzle|simulation",
+            "game_mechanics": [...],
+            "scoring_system": {...},
+            "achievement_criteria": [...]
+        }
+    
+    async def generate_progress_rewards(self, user_progress: dict) -> dict:
+        return {
+            "badges": [...],
+            "milestones": [...],
+            "achievements": [...],
+            "next_goals": [...]
+        }
+```
+
+### 7. Инструменты адаптивного обучения
+
+```python
+class AdaptiveLearningEngine:
+    """Адаптивная система обучения"""
+    
+    async def adjust_difficulty(self, user_performance: dict) -> dict:
+        return {
+            "new_difficulty_level": "...",
+            "content_adjustments": [...],
+            "pace_recommendations": "...",
+            "additional_resources": [...]
+        }
+    
+    async def recommend_learning_path(self, user_profile: dict, goals: list) -> dict:
+        return {
+            "recommended_path": [...],
+            "alternative_paths": [...],
+            "time_estimates": {...},
+            "prerequisites": [...]
+        }
+```
+
+### 8. Инструменты интеграции с внешними сервисами
+
+```python
+class ExternalServiceIntegration:
+    """Интеграция с внешними образовательными сервисами"""
+    
+    async def fetch_wikipedia_content(self, topic: str) -> dict:
+        """Получение актуальной информации из Wikipedia"""
+        pass
+    
+    async def get_youtube_educational_videos(self, topic: str) -> dict:
+        """Поиск образовательных видео"""
+        pass
+    
+    async def access_course_repositories(self, topic: str) -> dict:
+        """Доступ к репозиториям с образовательными материалами"""
+        pass
+```
+
+### 9. Инструменты совместного обучения
+
+```python
+class CollaborativeLearningTools:
+    """Инструменты для группового обучения"""
+    
+    async def create_group_project(self, participants: list, topic: str) -> dict:
+        return {
+            "project_description": "...",
+            "role_assignments": {...},
+            "milestones": [...],
+            "collaboration_guidelines": [...]
+        }
+    
+    async def generate_discussion_prompts(self, lesson_content: dict) -> dict:
+        return {
+            "discussion_topics": [...],
+            "guiding_questions": [...],
+            "debate_scenarios": [...]
+        }
+```
+
+### 10. Инструменты оценки и сертификации
+
+```python
+class AssessmentTools:
+    """Инструменты оценки знаний"""
+    
+    async def create_comprehensive_test(self, course_content: dict) -> dict:
+        return {
+            "test_sections": [...],
+            "question_types": [...],
+            "grading_rubric": {...},
+            "certification_criteria": [...]
+        }
+    
+    async def generate_portfolio_projects(self, skills_learned: list) -> dict:
+        return {
+            "project_ideas": [...],
+            "requirements": {...},
+            "evaluation_criteria": [...],
+            "showcase_guidelines": [...]
+        }
+```
 
 ---
 
@@ -253,145 +685,43 @@ class LearningMaterialWorkflow:
 
 ```
 learning-ai-agent/
-├── workflows/
-│   ├── learning_workflow.py
-│   └── assessment_workflow.py
-├── activities/
-│   ├── education_activities.py
-│   └── content_generation_activities.py
-├── tools/
-│   └── education/
-│       ├── content_generator.py
-│       ├── exercise_creator.py
-│       ├── knowledge_assessor.py
-│       └── curriculum_planner.py
-├── goals/
-│   ├── education.py
-│   └── assessment.py
-├── models/
-│   ├── course_models.py
-│   ├── user_models.py
-│   └── assessment_models.py
-├── prompts/
-│   ├── course_generation_prompts.py
-│   └── assessment_prompts.py
-├── api/
-│   ├── course_endpoints.py
-│   └── learning_endpoints.py
-├── frontend/
-│   ├── components/
-│   │   ├── CourseBuilder/
-│   │   ├── LessonViewer/
-│   │   └── ProgressTracker/
-│   └── pages/
-│       ├── CoursePage.tsx
-│       └── DashboardPage.tsx
-└── tests/
-    ├── test_workflows.py
-    ├── test_activities.py
-    └── test_tools.py
+├── django_backend/
+│   ├── settings/
+│   ├── apps/
+│   │   ├── prompt_management/
+│   │   │   ├── models.py
+│   │   │   ├── admin.py
+│   │   │   ├── api.py
+│   │   │   └── serializers.py
+│   │   ├── course_generation/
+│   │   ├── user_profiles/
+│   │   └── analytics/
+│   ├── temporal_integration/
+│   │   ├── workflows/
+│   │   ├── activities/
+│   │   └── tools/
+│   └── requirements.txt
+├── vue_frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CourseBuilder/
+│   │   │   ├── LessonViewer/
+│   │   │   ├── ProgressTracker/
+│   │   │   └── PromptEditor/
+│   │   ├── views/
+│   │   ├── stores/
+│   │   └── services/
+│   ├── tailwind.config.js
+│   ├── vite.config.ts
+│   └── package.json
+├── temporal_workers/
+│   ├── workflows/
+│   ├── activities/
+│   └── tools/
+├── docker-compose.yml
+└── docs/
 ```
 
 ---
 
-## 🎯 Примеры использования
-
-### Сценарий 1: Создание курса по Python
-```
-Пользователь: "Хочу изучить Python с нуля"
-Агент: "Отлично! Я создам для вас персонализированный курс. Какой у вас опыт программирования?"
-Пользователь: "Никакого, полный новичок"
-Агент: "Понятно. Сколько времени в неделю вы готовы уделять обучению?"
-Пользователь: "Около 5 часов"
-Агент: "Создаю для вас 8-недельный курс 'Python для начинающих'..."
-```
-
-### Сценарий 2: Генерация практического задания
-```
-Система: Генерирует задание "Создание калькулятора"
-- Описание задачи
-- Пошаговые инструкции  
-- Примеры кода
-- Тесты для проверки
-- Критерии оценки
-```
-
----
-
-## 🔧 Конфигурация и настройка
-
-### Переменные окружения:
-```bash
-# LLM Configuration
-LLM_MODEL=openai/gpt-4o
-LLM_KEY=your-api-key-here
-
-# Agent Configuration  
-AGENT_GOAL=goal_create_course
-SHOW_CONFIRM=True
-
-# Database
-DATABASE_URL=postgresql://user:pass@localhost/learning_db
-
-# Content Generation
-MAX_LESSON_LENGTH=2000
-DEFAULT_COURSE_DURATION_WEEKS=8
-SUPPORTED_LANGUAGES=ru,en
-```
-
-### Промпты для генерации контента:
-```python
-COURSE_GENERATION_PROMPT = """
-Создай структуру курса по теме '{topic}' для уровня '{level}'.
-Курс должен включать:
-1. Введение и цели обучения
-2. {num_lessons} уроков с практическими заданиями
-3. Итоговый проект
-4. Критерии оценки
-
-Уровень: {level}
-Продолжительность: {duration} недель
-Целевая аудитория: {audience}
-"""
-```
-
----
-
-## 📈 Метрики успеха
-
-### Количественные метрики:
-- Время генерации курса: < 2 минут
-- Количество одновременных пользователей: > 100
-- Время отклика API: < 500ms
-- Доступность системы: > 99.5%
-
-### Качественные метрики:
-- Релевантность сгенерированного контента
-- Удовлетворенность пользователей
-- Эффективность обучения
-- Качество практических заданий
-
----
-
-## 🚨 Риски и митигация
-
-### Технические риски:
-1. **Высокая стоимость LLM запросов**
-   - Митигация: Кэширование, оптимизация промптов, использование более дешевых моделей для простых задач
-
-2. **Качество генерируемого контента**
-   - Митигация: Система валидации контента, человеческая модерация, A/B тестирование промптов
-
-3. **Производительность при высокой нагрузке**
-   - Митигация: Горизонтальное масштабирование, очереди задач, кэширование
-
-### Бизнес риски:
-1. **Соответствие образовательным стандартам**
-   - Митигация: Консультации с экспертами по образованию, сертификация контента
-
-2. **Плагиат и авторские права**
-   - Митигация: Проверка уникальности контента, использование только открытых источников
-
----
-
-Этот план предоставляет полный roadmap для создания AI агента генерации обучающих материалов на базе архитектуры Temporal AI Agent. Рекомендуется начать с MVP версии (Этапы 1-2) и итеративно добавлять функциональность.
+Этот обновленный план предоставляет полный roadmap для создания AI агента генерации обучающих материалов с современной архитектурой Django + Vue, продвинутой системой управления промптами и богатым набором инструментов для создания качественного образовательного контента.

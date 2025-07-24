@@ -1,19 +1,11 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
-    <!-- Header -->
-    <div class="bg-white shadow dark:bg-gray-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-6">
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Обучение</h1>
-          <p class="mt-2 text-gray-600 dark:text-gray-400">
-            Изучайте курсы, созданные с помощью ИИ
-          </p>
-        </div>
-      </div>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Обучение</h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        Изучайте курсы, созданные с помощью ИИ
+      </p>
     </div>
-
-    <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center items-center py-12">

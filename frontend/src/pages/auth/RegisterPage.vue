@@ -84,20 +84,6 @@
           </div>
 
           <div>
-            <label for="username" class="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
-              Имя пользователя
-            </label>
-            <BaseInput
-              id="username"
-              v-model="registerData.username"
-              type="text"
-              placeholder="Введите имя пользователя"
-              :error="fieldErrors.username"
-              required
-            />
-          </div>
-
-          <div>
             <label for="password1" class="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
               Пароль
             </label>
@@ -192,14 +178,12 @@ const agreedToTerms = ref(false)
 
 const registerData = reactive({
   email: '',
-  username: '',
   password1: '',
   password2: ''
 })
 
 const fieldErrors = reactive({
   email: '',
-  username: '',
   password1: '',
   password2: ''
 })
@@ -224,7 +208,6 @@ const handleRegister = async () => {
   try {
     await authStore.register({
       email: registerData.email,
-      username: registerData.username,
       password: registerData.password1,
       password_confirm: registerData.password2
     })
@@ -236,7 +219,6 @@ const handleRegister = async () => {
       // Handle field-specific errors
       const errors = err.response.data.errors
       fieldErrors.email = errors.email?.[0] || ''
-      fieldErrors.username = errors.username?.[0] || ''
       fieldErrors.password1 = errors.password?.[0] || errors.password1?.[0] || ''
       fieldErrors.password2 = errors.password_confirm?.[0] || errors.password2?.[0] || ''
     } else {

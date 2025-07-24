@@ -6,22 +6,55 @@
     </div>
     
     <!-- Main app content -->
-    <router-view v-else />
+    <template v-else>
+      <!-- Use AuthLayout for authenticated pages -->
+      <AuthLayout v-if="shouldUseAuthLayout">
+        <router-view />
+      </AuthLayout>
+      
+      <!-- Use default layout for public pages -->
+      <router-view v-else />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import { useTheme } from './composables/useTheme'
+import AuthLayout from './layouts/AuthLayout.vue'
 
 const authStore = useAuthStore()
+const route = useRoute()
 const isInitializing = ref(true)
+const { initializeTheme } = useTheme()
+
+// Check if current route should use auth layout
+const shouldUseAuthLayout = computed(() => {
+  // For routes with explicit auth layout requirement
+  if (route.meta.layout === 'auth' && authStore.isAuthenticated) {
+    return true
+  }
+  
+  // For home page, use auth layout if user is authenticated
+  if (route.path === '/' && authStore.isAuthenticated) {
+    return true
+  }
+  
+  return false
+})
 
 onMounted(async () => {
   try {
+    // Initialize theme first
+    initializeTheme()
+    
+    // Then initialize auth
     await authStore.initializeAuth()
   } catch (error) {
     console.error('Failed to initialize auth:', error)
+    // Don't throw error, just log it and continue
   } finally {
     isInitializing.value = false
   }

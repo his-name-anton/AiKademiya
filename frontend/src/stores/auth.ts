@@ -9,6 +9,10 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(localStorage.getItem('access_token'));
   const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'));
   const isLoading = ref(false);
+  const isInitialized = ref(false);
+  const tokenRefreshTimer = ref<number | null>(null);
+  const inactivityTimer = ref<number | null>(null);
+  const lastActivityTime = ref<number>(Date.now());
 
   // Getters
   const isAuthenticated = computed(() => !!accessToken.value && !!user.value);
@@ -20,6 +24,54 @@ export const useAuthStore = defineStore('auth', () => {
       ? `${user.value.firstName} ${user.value.lastName}`
       : user.value.email;
   });
+
+  // Helper function to check if token is expired
+  function isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return payload.exp < currentTime;
+    } catch {
+      return true;
+    }
+  }
+
+  // Helper function to get token expiration time
+  function getTokenExpirationTime(token: string): number {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000; // Convert to milliseconds
+    } catch {
+      return 0;
+    }
+  }
+
+  // Helper function to set up automatic token refresh
+  function setupTokenRefreshTimer(): void {
+    // Clear existing timer
+    if (tokenRefreshTimer.value) {
+      clearTimeout(tokenRefreshTimer.value);
+    }
+
+    if (!accessToken.value) return;
+
+    const expirationTime = getTokenExpirationTime(accessToken.value);
+    const currentTime = Date.now();
+    const timeUntilExpiration = expirationTime - currentTime;
+
+    // Refresh token 5 minutes before expiration
+    const refreshTime = Math.max(timeUntilExpiration - 5 * 60 * 1000, 60000); // At least 1 minute
+
+    tokenRefreshTimer.value = window.setTimeout(async () => {
+      try {
+        await refreshTokens();
+        // Set up next refresh timer
+        setupTokenRefreshTimer();
+      } catch (error) {
+        console.error('Automatic token refresh failed:', error);
+      }
+    }, refreshTime);
+  }
 
   // Actions
   async function login(credentials: LoginCredentials): Promise<void> {
@@ -35,6 +87,11 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Store user data
       user.value = userData;
+      
+      // Set up automatic token refresh
+      setupTokenRefreshTimer();
+      // Set up activity monitoring
+      setupActivityMonitoring();
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -56,6 +113,11 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Store user data
       user.value = userData;
+      
+      // Set up automatic token refresh
+      setupTokenRefreshTimer();
+      // Set up activity monitoring
+      setupActivityMonitoring();
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
@@ -72,6 +134,11 @@ export const useAuthStore = defineStore('auth', () => {
       
       accessToken.value = access;
       localStorage.setItem('access_token', access);
+      
+      // Set up automatic token refresh for new token
+      setupTokenRefreshTimer();
+      // Set up activity monitoring
+      setupActivityMonitoring();
       
       return true;
     } catch (error) {
@@ -100,10 +167,25 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = null;
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    
+    // Clear token refresh timer
+    if (tokenRefreshTimer.value) {
+      clearTimeout(tokenRefreshTimer.value);
+      tokenRefreshTimer.value = null;
+    }
+    
+    // Clear inactivity timer
+    if (inactivityTimer.value) {
+      clearTimeout(inactivityTimer.value);
+      inactivityTimer.value = null;
+    }
+    
+    // Note: Event listeners will be cleaned up when the page is unloaded
+    // or when new ones are added on next authentication
   }
 
   async function fetchProfile(): Promise<void> {
-    if (!isAuthenticated.value) return;
+    if (!accessToken.value) return;
 
     try {
       const userData = await authApi.getProfile();
@@ -155,14 +237,122 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Initialize auth state on store creation
   async function initializeAuth(): Promise<void> {
-    if (accessToken.value) {
-      try {
-        await fetchProfile();
-      } catch (error) {
-        // If fetching profile fails, clear auth data
+    if (isInitialized.value) return;
+    
+    try {
+      // Check if we have tokens
+      if (accessToken.value && refreshToken.value) {
+        // Check if access token is expired
+        if (isTokenExpired(accessToken.value)) {
+          // Try to refresh the token
+          const refreshed = await refreshTokens();
+          if (!refreshed) {
+            // If refresh failed, clear auth data
+            clearAuthData();
+            isInitialized.value = true;
+            return;
+          }
+        }
+        
+        // Fetch user profile to verify token is still valid
+        try {
+          await fetchProfile();
+          // Set up automatic token refresh
+          setupTokenRefreshTimer();
+          // Set up activity monitoring
+          setupActivityMonitoring();
+        } catch (error) {
+          console.error('Failed to fetch profile during initialization:', error);
+          // If profile fetch fails, try to refresh token one more time
+          const refreshed = await refreshTokens();
+          if (refreshed) {
+            await fetchProfile();
+            // Set up automatic token refresh
+            setupTokenRefreshTimer();
+            // Set up activity monitoring
+            setupActivityMonitoring();
+          } else {
+            clearAuthData();
+          }
+        }
+      } else {
+        // No tokens found, clear any stale data
         clearAuthData();
       }
+    } catch (error) {
+      console.error('Auth initialization failed:', error);
+      clearAuthData();
+    } finally {
+      isInitialized.value = true;
     }
+  }
+
+  // Helper function to set up activity monitoring
+  function setupActivityMonitoring(): void {
+    // Clear existing inactivity timer
+    if (inactivityTimer.value) {
+      clearTimeout(inactivityTimer.value);
+    }
+
+    // Set up inactivity timer (24 hours)
+    const INACTIVITY_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    
+    inactivityTimer.value = window.setTimeout(() => {
+      console.log('User inactive for 24 hours, logging out');
+      logout();
+    }, INACTIVITY_TIMEOUT);
+
+    // Reset token refresh timer and inactivity timer on user activity
+    const resetTimers = () => {
+      lastActivityTime.value = Date.now();
+      
+      if (accessToken.value && !isTokenExpired(accessToken.value)) {
+        setupTokenRefreshTimer();
+      }
+      
+      // Reset inactivity timer
+      if (inactivityTimer.value) {
+        clearTimeout(inactivityTimer.value);
+      }
+      inactivityTimer.value = window.setTimeout(() => {
+        console.log('User inactive for 24 hours, logging out');
+        logout();
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    // Listen for user activity events
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.addEventListener(event, resetTimers, { passive: true });
+    });
+
+    // Handle page visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page is hidden, pause inactivity timer
+        if (inactivityTimer.value) {
+          clearTimeout(inactivityTimer.value);
+          inactivityTimer.value = null;
+        }
+      } else {
+        // Page is visible again, reset timers
+        resetTimers();
+      }
+    };
+
+    // Handle window focus/blur
+    const handleWindowFocus = () => {
+      resetTimers();
+    };
+
+    const handleWindowBlur = () => {
+      // Window lost focus, but don't clear timer immediately
+      // Timer will continue running unless page becomes hidden
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
+    window.addEventListener('blur', handleWindowBlur);
   }
 
   return {
@@ -171,6 +361,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     isLoading,
+    isInitialized,
     
     // Getters
     isAuthenticated,

@@ -57,4 +57,4 @@ import HowItWorks from '@/components/index/HowItWorks.vue'
 import Benefits from '@/components/index/Benefits.vue'
 
 const authStore = useAuthStore()
-</script>
+</script> 

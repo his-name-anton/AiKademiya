@@ -5,7 +5,6 @@ import router from './router'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import './assets/css/main.css'
-import 'flowbite'
 
 // Create Vue app
 const app = createApp(App)
@@ -32,11 +31,6 @@ app.use(Toast, {
   rtl: false,
   position: 'top-right',
   transition: 'Vue-Toastification__bounce',
-})
-
-// Initialize Flowbite
-import('flowbite').then(({ initFlowbite }) => {
-  initFlowbite()
 })
 
 // Mount the app

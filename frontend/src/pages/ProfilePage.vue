@@ -1,16 +1,5 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
-    <!-- Header -->
-    <div class="bg-white shadow dark:bg-gray-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-6">
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Профиль</h1>
-        </div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="space-y-6">
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         
         <!-- Profile Card -->
@@ -234,7 +223,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">

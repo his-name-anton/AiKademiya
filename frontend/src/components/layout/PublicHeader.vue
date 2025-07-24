@@ -44,10 +44,10 @@
             <!-- User menu -->
             <div v-else class="flex items-center space-x-3">
               <router-link 
-                to="/dashboard" 
+                to="/generate" 
                 class="btn-primary text-sm"
               >
-                Панель управления
+                Создать курс
               </router-link>
               <UserDropdown />
             </div>
@@ -102,11 +102,11 @@
               </div>
               <div v-else class="space-y-2">
                 <router-link 
-                  to="/dashboard"
+                  to="/generate"
                   class="block w-full text-center btn-primary"
                   @click="mobileMenuOpen = false"
                 >
-                  Панель управления
+                  Создать курс
                 </router-link>
               </div>
             </div>
@@ -120,11 +120,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { useAuth } from '@/composables/useAuth'
+import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import UserDropdown from '@/components/layout/UserDropdown.vue'
 
-const { isAuthenticated } = useAuth()
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 const mobileMenuOpen = ref(false)
 
 const navigation = [
