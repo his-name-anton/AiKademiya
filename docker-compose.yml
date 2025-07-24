@@ -14,9 +14,10 @@ services:
     networks:
       - default
 
-  # Django-приложение
+  # Django API-only приложение
   web:
     build: .
+    container_name: aikademiya-backend
     command: python aikademiya/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
@@ -26,6 +27,7 @@ services:
       POSTGRES_PASSWORD: aikademiya
       POSTGRES_HOST: db
       TEMPORAL_ADDRESS: temporal:7233
+      DJANGO_DEBUG: "True"
     ports:
       - "8000:8000"
     depends_on:
@@ -34,6 +36,7 @@ services:
       - default
       - temporal-network
 
+  # Vue.js фронтенд (полностью независимый)
   frontend:
     build:
       context: ./frontend
@@ -45,10 +48,12 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: npm run dev
+      - VITE_API_BASE_URL=http://localhost:8000/api
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - web
     networks:
       - default
-
 
   # PostgreSQL для Temporal
   postgresql:

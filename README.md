@@ -1,8 +1,28 @@
 # AiKademiya
 
-Educational course generation platform.
+Educational course generation platform with AI-powered course creation.
 
-## Local development
+## 🚀 Quick Start with Docker (Recommended)
+
+For full frontend/backend separation development:
+
+```bash
+# Start all services
+./docker-dev.sh up
+
+# Run migrations
+./docker-dev.sh migrate
+```
+
+**Access points:**
+- Frontend (Vue.js): http://localhost:5173
+- Backend API: http://localhost:8000/api
+- Django Admin: http://localhost:8000/admin
+- API Docs: http://localhost:8000/api/schema/swagger-ui/
+
+📖 **See [DOCKER_DEVELOPMENT.md](DOCKER_DEVELOPMENT.md) for complete Docker development guide**
+
+## Alternative: Local development
 
 1. Install dependencies:
    ```bash
@@ -26,7 +46,6 @@ Educational course generation platform.
    docker-compose exec web python aikademiya/manage.py migrate
    docker-compose exec web python aikademiya/manage.py createsuperuser
    ```
-4. 4. Access the site at <http://localhost:8000>.
 
 ### Email setup
 
