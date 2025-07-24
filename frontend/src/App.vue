@@ -1,25 +1,17 @@
 <template>
   <div id="app" class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Loading state -->
-    <div v-if="isInitializing" class="min-h-screen flex items-center justify-center">
-      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-    </div>
+    <!-- Use AuthLayout for authenticated pages -->
+    <AuthLayout v-if="shouldUseAuthLayout">
+      <router-view />
+    </AuthLayout>
     
-    <!-- Main app content -->
-    <template v-else>
-      <!-- Use AuthLayout for authenticated pages -->
-      <AuthLayout v-if="shouldUseAuthLayout">
-        <router-view />
-      </AuthLayout>
-      
-      <!-- Use default layout for public pages -->
-      <router-view v-else />
-    </template>
+    <!-- Use default layout for public pages -->
+    <router-view v-else />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { useTheme } from './composables/useTheme'
@@ -27,7 +19,6 @@ import AuthLayout from './layouts/AuthLayout.vue'
 
 const authStore = useAuthStore()
 const route = useRoute()
-const isInitializing = ref(true)
 const { initializeTheme } = useTheme()
 
 // Check if current route should use auth layout
@@ -45,21 +36,9 @@ const shouldUseAuthLayout = computed(() => {
   return false
 })
 
-// Initialize app before mounting
-onBeforeMount(async () => {
-  try {
-    // Initialize theme first
-    initializeTheme()
-    
-    // Then initialize auth - this is critical for preventing redirects
-    await authStore.initializeAuth()
-  } catch (error) {
-    console.error('Failed to initialize auth:', error)
-    // Clear any invalid auth data
-    authStore.clearAuthData()
-  } finally {
-    isInitializing.value = false
-  }
+// Initialize theme on mount
+onBeforeMount(() => {
+  initializeTheme()
 })
 </script>
 
