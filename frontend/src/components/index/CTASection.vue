@@ -1,134 +1,176 @@
 <template>
-  <section class="py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white relative overflow-hidden">
-    <!-- Background decorations -->
-    <div class="absolute inset-0">
-      <div class="absolute top-20 left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-20 w-48 h-48 bg-purple-500/30 rounded-full blur-2xl animate-pulse delay-1000"></div>
-      <div class="absolute top-1/2 left-1/3 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl animate-bounce delay-500"></div>
-    </div>
-
-    <div class="container mx-auto px-4 relative z-10">
-      <!-- Main CTA content -->
-      <div class="text-center max-w-4xl mx-auto animate-fade-in">
-        <div class="inline-flex items-center bg-yellow-400/20 text-yellow-300 px-6 py-2 rounded-full text-sm font-medium mb-6 animate-pulse">
-          🎯 Ограниченное предложение
-        </div>
-        
-        <h2 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-          Начните создавать курсы 
-          <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-            прямо сейчас
-          </span>
-        </h2>
-        
-        <p class="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
-          Присоединяйтесь к революции в образовании. Создайте свой первый курс бесплатно 
-          и откройте для себя силу искусственного интеллекта.
-        </p>
-
-        <!-- Main CTA buttons -->
-        <div class="flex flex-col sm:flex-row gap-6 justify-center mb-16 animate-slide-up delay-300">
-          <router-link 
-            to="/register"
-            class="group relative px-12 py-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold text-xl rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-yellow-500/50 overflow-hidden"
-          >
-            <span class="relative z-10 flex items-center justify-center">
-              🚀 Создать курс бесплатно
-              <svg class="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </span>
-            <div class="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </router-link>
-          
-          <button class="group px-12 py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold text-xl rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-105">
-            <span class="flex items-center justify-center">
-              📞 Заказать консультацию
-            </span>
-          </button>
-        </div>
-
-        <!-- Feature highlights -->
-        <div class="grid md:grid-cols-3 gap-8 mb-16 animate-slide-up delay-600">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold mb-2">Бесплатный старт</h3>
-            <p class="text-gray-400">Создайте первый курс без оплаты</p>
+  <section class="py-24 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Main CTA -->
+      <div class="relative">
+        <!-- Background elements -->
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-3xl transform -rotate-1"></div>
+        <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-3xl p-12 lg:p-16 text-white">
+          <!-- Background decoration -->
+          <div class="absolute inset-0 overflow-hidden rounded-3xl">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
           </div>
           
-          <div class="text-center">
-            <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          <div class="relative text-center">
+            <!-- Icon -->
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-8">
+              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold mb-2">Быстрый результат</h3>
-            <p class="text-gray-400">Курс готов за 5 минут</p>
-          </div>
-          
-          <div class="text-center">
-            <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold mb-2">Полная поддержка</h3>
-            <p class="text-gray-400">Помощь на каждом шаге</p>
-          </div>
-        </div>
 
-        <!-- Urgency and social proof -->
-        <div class="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 animate-fade-in delay-800">
-          <div class="grid md:grid-cols-2 gap-8 items-center">
-            <div class="text-left">
-              <h3 class="text-2xl font-bold mb-4">⏰ Не упустите момент!</h3>
-              <p class="text-gray-300 mb-4">
-                Каждый день промедления — это упущенная возможность создать курс, 
-                который может изменить вашу карьеру или бизнес.
-              </p>
-              <div class="flex items-center text-green-400">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
-                </svg>
-                Регистрация занимает 30 секунд
+            <!-- Heading -->
+            <h2 class="text-4xl md:text-6xl font-bold mb-6">
+              Начните учиться уже сегодня
+            </h2>
+            
+            <!-- Subheading -->
+            <p class="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Искусственный интеллект создаст персональный курс специально для вас. 
+              <span class="text-white font-semibold">Первая неделя абсолютно бесплатна</span> — без обязательств и скрытых платежей.
+            </p>
+
+            <!-- Features list -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+              <div class="flex items-center gap-3 justify-center md:justify-start">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <span class="text-blue-100 font-medium">7 дней бесплатно</span>
+              </div>
+              <div class="flex items-center gap-3 justify-center md:justify-start">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <span class="text-blue-100 font-medium">Отмена в любой момент</span>
+              </div>
+              <div class="flex items-center gap-3 justify-center md:justify-start">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <span class="text-blue-100 font-medium">AI-персонализация</span>
               </div>
             </div>
-            
-            <div class="text-center md:text-right">
-              <div class="text-4xl font-bold text-yellow-400 mb-2">2,847</div>
-              <p class="text-gray-300">курсов уже создано</p>
-              <div class="text-lg text-green-400 mt-2">+47 за последние 24 часа</div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <router-link 
+                to="/register"
+                class="group inline-flex items-center gap-3 px-10 py-5 bg-white text-blue-600 font-bold text-xl rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-xl"
+              >
+                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Попробовать бесплатно
+              </router-link>
+              
+              <button class="group inline-flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold text-xl rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                </svg>
+                Смотреть демо
+              </button>
+            </div>
+
+            <!-- Trust indicators -->
+            <div class="text-center text-blue-100 text-sm">
+              <p class="mb-2">Уже доверяют 10,000+ студентов</p>
+              <div class="flex justify-center items-center gap-1">
+                <div class="flex text-yellow-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                </div>
+                <span class="ml-2">4.9 из 5 звёзд</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Risk reversal -->
-        <div class="mt-12 animate-fade-in delay-1000">
-          <p class="text-gray-400 mb-4">
-            💰 <strong>100% гарантия возврата денег в течение 30 дней</strong>
-          </p>
-          <p class="text-sm text-gray-500">
-            Не нравится результат? Вернём деньги без вопросов. 
-            Но мы уверены — вы останетесь довольны качеством наших курсов.
+      <!-- Secondary features -->
+      <div class="mt-20 grid md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="text-center group">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Индивидуальный подход</h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            AI анализирует ваш стиль обучения и создаёт курс именно под вас
           </p>
         </div>
 
-        <!-- Final push -->
-        <div class="mt-16 p-8 bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-2xl border border-red-500/30 animate-pulse-glow">
-          <h3 class="text-2xl font-bold text-red-400 mb-4">🔥 Последний шанс!</h3>
-          <p class="text-lg text-gray-200 mb-6">
-            Присоединяйтесь к тысячам пользователей, которые уже экономят время и деньги с AiKademiya
+        <!-- Feature 2 -->
+        <div class="text-center group">
+          <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-400 dark:to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Быстрые результаты</h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            Большинство студентов видят прогресс уже в первую неделю обучения
           </p>
-          <router-link 
-            to="/register"
-            class="inline-flex items-center px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-xl"
-          >
-            Начать прямо сейчас →
-          </router-link>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="text-center group">
+          <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-400 dark:to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">24/7 поддержка</h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            AI-наставник всегда готов ответить на вопросы и помочь с обучением
+          </p>
+        </div>
+      </div>
+
+      <!-- FAQ teaser -->
+      <div class="mt-20 text-center">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Остались вопросы?</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-8">
+          Мы ответили на самые частые вопросы о нашей платформе
+        </p>
+        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <!-- FAQ Item 1 -->
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 text-left">
+            <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Подойдёт ли мне, если я полный новичок?</h4>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Конечно! AI определит ваш уровень и создаст курс с самых основ.
+            </p>
+          </div>
+          
+          <!-- FAQ Item 2 -->
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 text-left">
+            <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Сколько времени нужно уделять обучению?</h4>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Всего 15-30 минут в день. AI адаптирует курс под ваш график.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -136,66 +178,5 @@
 </template>
 
 <style scoped>
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(239, 68, 68, 0.6);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 1s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.8s ease-out forwards;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.delay-300 {
-  animation-delay: 0.3s;
-}
-
-.delay-500 {
-  animation-delay: 0.5s;
-}
-
-.delay-600 {
-  animation-delay: 0.6s;
-}
-
-.delay-800 {
-  animation-delay: 0.8s;
-}
-
-.delay-1000 {
-  animation-delay: 1s;
-}
+/* Smooth animations will be handled by Tailwind classes */
 </style> 

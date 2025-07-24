@@ -45,7 +45,7 @@
       <HeroSection />
       
       <!-- How It Works Section -->
-      <HowItWorks />
+      <HowItWorks id="how-it-works" />
       
       <!-- Benefits Section -->
       <Benefits />

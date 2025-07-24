@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <router-link to="/" class="flex items-center space-x-2">
-          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 rounded-lg flex items-center justify-center">
             <span class="text-white font-bold text-sm">AI</span>
           </div>
           <span class="text-xl font-bold text-gray-900 dark:text-white">AiKademiya</span>
@@ -130,8 +130,8 @@ const mobileMenuOpen = ref(false)
 
 const navigation = [
   { name: 'Главная', href: '/' },
-  { name: 'О нас', href: '/about' },
-  { name: 'Каталог', href: '/catalog' },
+  { name: 'Как это работает', href: '/#how-it-works' },
+  { name: 'Каталог курсов', href: '/catalog' },
   { name: 'Тарифы', href: '/pricing' },
 ]
 </script>

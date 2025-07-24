@@ -1,193 +1,249 @@
 <template>
-  <section class="py-20 bg-gray-50">
-    <div class="container mx-auto px-4">
+  <section class="py-24 bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Section header -->
-      <div class="text-center mb-16 animate-fade-in">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Что говорят наши 
-          <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            клиенты
-          </span>
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          Истории успеха наших <span class="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">студентов</span>
         </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Реальные истории успеха от компаний и экспертов, которые уже используют AiKademiya
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Реальные люди, реальные результаты, реальные истории изменений
         </p>
       </div>
 
       <!-- Testimonials grid -->
-      <div class="grid lg:grid-cols-3 gap-8 mb-16">
-        <!-- Testimonial 1: Corporate -->
-        <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up border-l-4 border-blue-500">
-          <div class="flex items-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mr-4">
-              МИ
-            </div>
-            <div>
-              <div class="font-bold text-lg text-gray-900">Михаил Иванов</div>
-              <div class="text-gray-600">Директор по обучению</div>
-              <div class="text-sm text-blue-600 font-medium">FinTech Solutions</div>
-            </div>
-          </div>
-          <div class="mb-6">
-            <div class="flex text-yellow-400 mb-3">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-for="i in 5" :key="i">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+      <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-8 mb-16">
+        <!-- Student 1: Career Change -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-blue-500 dark:text-blue-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
               </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "За 3 месяца изучила веб-разработку с нуля и получила работу junior frontend разработчика. AI-курсы адаптировались под мой график работы мамы двоих детей."
+              </p>
             </div>
-          </div>
-          <blockquote class="text-gray-700 italic mb-6 leading-relaxed">
-            "Внедрили AiKademiya для корпоративного обучения. За 3 месяца создали 25 курсов по финансовой грамотности. 
-            Сотрудники в восторге от качества материалов!"
-          </blockquote>
-          <div class="bg-blue-50 rounded-xl p-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Курсов создано:</span>
-              <span class="font-bold text-blue-600">25</span>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">МС</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Мария Соколова</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Веб-разработчик в IT-стартапе</p>
+              </div>
             </div>
-            <div class="flex justify-between text-sm mt-1">
-              <span class="text-gray-600">Экономия:</span>
-              <span class="font-bold text-green-600">₽450,000</span>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Веб-разработка для начинающих
             </div>
           </div>
         </div>
 
-        <!-- Testimonial 2: Educational -->
-        <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up delay-200 border-l-4 border-purple-500">
-          <div class="flex items-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mr-4">
-              ЕП
-            </div>
-            <div>
-              <div class="font-bold text-lg text-gray-900">Елена Петрова</div>
-              <div class="text-gray-600">Методист</div>
-              <div class="text-sm text-purple-600 font-medium">Онлайн-школа "Знание+"</div>
-            </div>
-          </div>
-          <div class="mb-6">
-            <div class="flex text-yellow-400 mb-3">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-for="i in 5" :key="i">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        <!-- Student 2: Skill Upgrade -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-green-500 dark:text-green-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
               </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "Освоил Data Science и машинное обучение. Получил повышение и теперь возглавляю отдел аналитики. AI понимал мои вопросы лучше, чем преподаватели в вузе."
+              </p>
             </div>
-          </div>
-          <blockquote class="text-gray-700 italic mb-6 leading-relaxed">
-            "Как методист, я в восторге! ИИ создаёт структурированные курсы с логичной последовательностью. 
-            Теперь могу сосредоточиться на педагогических нюансах."
-          </blockquote>
-          <div class="bg-purple-50 rounded-xl p-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Курсов в месяц:</span>
-              <span class="font-bold text-purple-600">12</span>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">АП</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Алексей Петров</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Руководитель отдела аналитики</p>
+              </div>
             </div>
-            <div class="flex justify-between text-sm mt-1">
-              <span class="text-gray-600">Время экономии:</span>
-              <span class="font-bold text-green-600">80%</span>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Data Science с нуля
             </div>
           </div>
         </div>
 
-        <!-- Testimonial 3: Individual Expert -->
-        <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up delay-400 border-l-4 border-green-500">
-          <div class="flex items-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mr-4">
-              АВ
-            </div>
-            <div>
-              <div class="font-bold text-lg text-gray-900">Алексей Волков</div>
-              <div class="text-gray-600">IT-консультант</div>
-              <div class="text-sm text-green-600 font-medium">Частный эксперт</div>
-            </div>
-          </div>
-          <div class="mb-6">
-            <div class="flex text-yellow-400 mb-3">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-for="i in 5" :key="i">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        <!-- Student 3: Personal Interest -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-purple-500 dark:text-purple-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
               </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "Всегда мечтала играть на фортепиано. За полгода научилась играть любимые мелодии. AI создавал упражнения именно для моих проблемных мест."
+              </p>
+            </div>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">ЕК</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Елена Кузнецова</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Врач, хобби-пианистка</p>
+              </div>
+            </div>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Фортепиано для взрослых
             </div>
           </div>
-          <blockquote class="text-gray-700 italic mb-6 leading-relaxed">
-            "Запустил курс по Python за один вечер! Раньше на это уходило 2-3 недели. 
-            Доход вырос в 4 раза благодаря возможности быстро создавать актуальные курсы."
-          </blockquote>
-          <div class="bg-green-50 rounded-xl p-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Доход вырос:</span>
-              <span class="font-bold text-green-600">в 4 раза</span>
+        </div>
+
+        <!-- Student 4: Language Learning -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-orange-500 dark:text-orange-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+              </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "Выучил японский за 8 месяцев и теперь работаю в Токио! AI адаптировал курс под мой стиль обучения и помогал с произношением."
+              </p>
             </div>
-            <div class="flex justify-between text-sm mt-1">
-              <span class="text-gray-600">Курсов создано:</span>
-              <span class="font-bold text-blue-600">18</span>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">ДИ</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Дмитрий Иванов</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">IT-консультант в Японии</p>
+              </div>
+            </div>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 717 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Японский язык
+            </div>
+          </div>
+        </div>
+
+        <!-- Student 5: Creative Skills -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-cyan-500 dark:text-cyan-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+              </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "Научилась создавать потрясающие фотографии и теперь это мой дополнительный источник дохода. AI помог найти свой уникальный стиль."
+              </p>
+            </div>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">АР</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Анна Романова</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Фотограф-фрилансер</p>
+              </div>
+            </div>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 717 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Художественная фотография
+            </div>
+          </div>
+        </div>
+
+        <!-- Student 6: Business Skills -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+          <div class="absolute inset-0 bg-gradient-to-br from-teal-50 to-green-50 dark:from-teal-900/20 dark:to-green-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative">
+            <!-- Quote -->
+            <div class="mb-6">
+              <svg class="w-8 h-8 text-teal-500 dark:text-teal-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+              </svg>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                "Освоил digital-маркетинг и запустил свой онлайн-магазин. За год вышел на 500к рублей в месяц. AI учил именно тому, что работает."
+              </p>
+            </div>
+            
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-teal-400 to-green-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold">СТ</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Сергей Титов</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Владелец интернет-магазина</p>
+              </div>
+            </div>
+            
+            <!-- Course badge -->
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-sm rounded-full">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 717 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+              </svg>
+              Digital-маркетинг
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Company logos section -->
-      <div class="animate-fade-in delay-600">
-        <div class="text-center mb-12">
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Нам доверяют ведущие компании</h3>
-          <p class="text-gray-600">Присоединяйтесь к экосистеме успешных организаций</p>
-        </div>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60">
-          <!-- Mock company logos -->
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            TechCorp
-          </div>
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            EduCenter
-          </div>
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            FinanceGroup
-          </div>
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            IT-Academy
-          </div>
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            StartupHub
-          </div>
-          <div class="bg-gray-200 rounded-xl h-16 flex items-center justify-center text-gray-500 font-bold">
-            ProConsult
-          </div>
-        </div>
-      </div>
-
-      <!-- Video testimonial section -->
-      <div class="mt-20 animate-fade-in delay-800">
-        <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white text-center">
-          <h3 class="text-3xl font-bold mb-4">Видео-отзыв от клиента</h3>
-          <p class="text-xl text-gray-300 mb-8">
-            Узнайте, как компания "Цифровые решения" увеличила эффективность обучения на 300%
-          </p>
-          <div class="bg-gray-700/50 rounded-2xl p-8 max-w-2xl mx-auto border border-gray-600">
-            <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
-              </svg>
-            </div>
-            <div class="text-sm text-gray-400 mb-2">Видео-отзыв • 3:24</div>
-            <div class="font-semibold">Дмитрий Козлов, CTO "Цифровые решения"</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Final CTA -->
-      <div class="text-center mt-16 animate-fade-in delay-1000">
-        <h3 class="text-3xl font-bold text-gray-900 mb-6">
-          Станьте следующей историей успеха
+      <!-- CTA Section -->
+      <div class="text-center bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-3xl p-12">
+        <h3 class="text-3xl md:text-4xl font-bold text-white mb-4">
+          Ваша история успеха начинается сегодня
         </h3>
-        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Присоединяйтесь к тысячам довольных клиентов и начните экономить время и деньги уже сегодня
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          Присоединяйтесь к тысячам студентов, которые уже изменили свою жизнь с помощью AI-образования
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <router-link 
-            to="/register" 
-            class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-xl"
+            to="/register"
+            class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 font-semibold text-lg rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-lg"
           >
-            🚀 Начать бесплатно
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Начать бесплатно
           </router-link>
-          <button class="px-8 py-4 bg-white text-gray-700 font-semibold text-lg rounded-2xl border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300">
-            Забронировать демо
+          <button class="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-semibold text-lg rounded-xl hover:bg-white/20 transition-all duration-300 hover:scale-105">
+            Посмотреть больше историй
           </button>
         </div>
       </div>
@@ -196,53 +252,5 @@
 </template>
 
 <style scoped>
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 1s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.8s ease-out forwards;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
-}
-
-.delay-600 {
-  animation-delay: 0.6s;
-}
-
-.delay-800 {
-  animation-delay: 0.8s;
-}
-
-.delay-1000 {
-  animation-delay: 1s;
-}
+/* Smooth animations will be handled by Tailwind classes */
 </style> 
