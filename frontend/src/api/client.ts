@@ -56,22 +56,28 @@ class ApiClient {
         
         // Only handle 401 errors for authenticated requests
         if (error.response?.status === 401 && error.config?.headers?.Authorization) {
+          console.log('401 error with Authorization header, attempting token refresh...');
           // Try to refresh token
           const refreshed = await authStore.refreshTokens();
           if (refreshed && error.config) {
+            console.log('Token refreshed, retrying original request...');
             // Retry original request with new token
             return this.client.request(error.config);
           } else {
+            console.log('Token refresh failed, logging out user...');
             // Logout user if refresh failed
             await authStore.logout();
-            // Only redirect if we're not already on login page
-            if (window.location.pathname !== '/login') {
+            // Only redirect if we're not already on login page and not on home page
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login' && currentPath !== '/') {
+              console.log('Redirecting to login page...');
               window.location.href = '/login';
             }
           }
         } else if (error.response?.status === 401) {
           // 401 without Authorization header - user is not authenticated
           // Don't redirect, just let the error propagate
+          console.log('401 error without Authorization header - user not authenticated');
         } else if (!error.response) {
           // Network error - don't logout user for network issues
           console.error('Network error:', error.message);
