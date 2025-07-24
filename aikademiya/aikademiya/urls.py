@@ -34,7 +34,26 @@ def api_root(request):
         }
     })
 
+def home_redirect(request):
+    """Корневой маршрут - информация о том, что это API сервер"""
+    return JsonResponse({
+        'message': 'AiKademiya API Server',
+        'version': '1.0.0',
+        'info': 'This is the API server. Frontend is available at http://localhost:5173',
+        'frontend_url': 'http://localhost:5173',
+        'api_docs': 'http://localhost:8000/api/schema/swagger-ui/',
+        'endpoints': {
+            'api_root': '/api/',
+            'auth': '/api/v1/auth/',
+            'courses': '/api/v1/courses/',
+            'quizzes': '/api/v1/quizzes/',
+            'admin': '/admin/',
+            'docs': '/api/schema/swagger-ui/',
+        }
+    })
+
 urlpatterns = [
+    path('', home_redirect, name='home'),  # Корневой маршрут
     path("admin/", admin.site.urls),
     path('api/', api_root, name='api-root'),
     
