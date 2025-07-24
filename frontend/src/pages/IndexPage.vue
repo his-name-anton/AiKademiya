@@ -40,10 +40,24 @@
   <!-- Use public layout for guests -->
   <main v-else class="bg-gray-50 text-gray-900">
     <PublicHeader />
-    <div class="container mx-auto px-4 max-w-7xl">
+    <div class="min-h-screen">
+      <!-- Hero Section -->
       <HeroSection />
+      
+      <!-- How It Works Section -->
       <HowItWorks />
+      
+      <!-- Benefits Section -->
       <Benefits />
+      
+      <!-- Stats Section -->
+      <StatsSection />
+      
+      <!-- Testimonials Section -->
+      <TestimonialsSection />
+      
+      <!-- Final CTA Section -->
+      <CTASection />
     </div>
   </main>
 </template>
@@ -55,6 +69,9 @@ import PublicHeader from '@/components/layout/PublicHeader.vue'
 import HeroSection from '@/components/index/HeroSection.vue'
 import HowItWorks from '@/components/index/HowItWorks.vue'
 import Benefits from '@/components/index/Benefits.vue'
+import StatsSection from '@/components/index/StatsSection.vue'
+import TestimonialsSection from '@/components/index/TestimonialsSection.vue'
+import CTASection from '@/components/index/CTASection.vue'
 
 const authStore = useAuthStore()
 </script> 
