@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../../src/stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import {
   FwbButton,

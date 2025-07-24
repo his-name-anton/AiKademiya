@@ -174,11 +174,11 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
-import BaseButton from '../../components/common/BaseButton.vue'
-import BaseInput from '../../components/common/BaseInput.vue'
-import FormAlert from '../../components/common/FormAlert.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
+import BaseInput from '@/components/common/BaseInput.vue'
+import FormAlert from '@/components/common/FormAlert.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

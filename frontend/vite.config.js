@@ -12,15 +12,24 @@ export default defineConfig(({mode}) => ({
     build: {
         outDir: resolve(__dirname, '../static/frontend'),
         emptyOutDir: true,
-        manifest: true
+        manifest: true,
+        rollupOptions: {
+            input: resolve(__dirname, 'index.html'),
+        },
     },
     resolve: {
         alias: {
-            '@': resolve(__dirname, './'), // 👈 указывает, что @ = ./frontend
+            '@': resolve(__dirname, './src'),
         },
     },
     server: {
         host: true,
         port: 5173,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            },
+        },
     }
 }))

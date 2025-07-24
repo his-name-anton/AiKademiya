@@ -87,11 +87,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { authApi } from '../../api/auth'
+import { authApi } from '@/api/auth'
 import { useToast } from 'vue-toastification'
-import BaseButton from '../../components/common/BaseButton.vue'
-import BaseInput from '../../components/common/BaseInput.vue'
-import FormAlert from '../../components/common/FormAlert.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
+import BaseInput from '@/components/common/BaseInput.vue'
+import FormAlert from '@/components/common/FormAlert.vue'
 
 const toast = useToast()
 

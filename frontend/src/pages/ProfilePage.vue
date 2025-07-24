@@ -239,12 +239,12 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
-import BaseButton from '../components/common/BaseButton.vue'
-import BaseInput from '../components/common/BaseInput.vue'
-import FormAlert from '../components/common/FormAlert.vue'
-import { authApi } from '../api/auth'
+import BaseButton from '@/components/common/BaseButton.vue'
+import BaseInput from '@/components/common/BaseInput.vue'
+import FormAlert from '@/components/common/FormAlert.vue'
+import { authApi } from '@/api/auth'
 
 const authStore = useAuthStore()
 const toast = useToast()

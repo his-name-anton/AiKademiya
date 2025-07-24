@@ -5,7 +5,7 @@ import type {
   LoginCredentials, 
   RegisterData, 
   ApiResponse 
-} from '../types';
+} from '@/types';
 
 export const authApi = {
   // Login user

@@ -250,7 +250,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import BaseButton from '../components/common/BaseButton.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 // TODO: Import courses API when available
 
 const router = useRouter()
