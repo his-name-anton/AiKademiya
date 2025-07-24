@@ -148,8 +148,10 @@ router.beforeEach(async (to, from, next) => {
   
   // Wait for auth initialization if not already done
   if (!authStore.isInitialized) {
+    console.log('Auth not initialized, waiting...');
     try {
       await authStore.initializeAuth()
+      console.log('Auth initialization completed in router');
     } catch (error) {
       console.error('Auth initialization failed in router:', error)
       // Don't redirect on initialization error, let the page handle it
@@ -158,12 +160,14 @@ router.beforeEach(async (to, from, next) => {
   
   // Check authentication requirements
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    console.log('Route requires auth but user not authenticated, redirecting to login');
     next('/login')
     return
   }
   
   // Redirect authenticated users away from auth pages
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    console.log('Authenticated user trying to access guest page, redirecting to home');
     next('/')
     return
   }

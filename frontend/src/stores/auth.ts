@@ -127,13 +127,19 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function refreshTokens(): Promise<boolean> {
-    if (!refreshToken.value) return false;
+    if (!refreshToken.value) {
+      console.log('No refresh token available');
+      return false;
+    }
 
     try {
+      console.log('Attempting to refresh token...');
       const { access } = await authApi.refreshToken(refreshToken.value);
       
       accessToken.value = access;
       localStorage.setItem('access_token', access);
+      
+      console.log('Token refreshed successfully');
       
       // Set up automatic token refresh for new token
       setupTokenRefreshTimer();
@@ -143,45 +149,70 @@ export const useAuthStore = defineStore('auth', () => {
       return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      logout();
+      // Don't call logout() here to avoid infinite loops
+      // Just clear the data
+      clearAuthData();
       return false;
     }
   }
 
   async function logout(): Promise<void> {
     try {
+      // Only call logout API if we have a refresh token
       if (refreshToken.value) {
+        console.log('Calling logout API...');
         await authApi.logout(refreshToken.value);
+      } else {
+        console.log('No refresh token available, skipping logout API call');
       }
     } catch (error) {
       console.error('Logout API call failed:', error);
+      // Continue with clearing local data even if API call fails
     } finally {
       // Clear state regardless of API call success
+      console.log('Clearing auth data...');
       clearAuthData();
     }
   }
 
   function clearAuthData(): void {
+    console.log('Clearing all auth data...');
+    
+    // Clear state
     user.value = null;
     accessToken.value = null;
     refreshToken.value = null;
+    
+    // Clear localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     
     // Clear token refresh timer
     if (tokenRefreshTimer.value) {
+      console.log('Clearing token refresh timer...');
       clearTimeout(tokenRefreshTimer.value);
       tokenRefreshTimer.value = null;
     }
     
     // Clear inactivity timer
     if (inactivityTimer.value) {
+      console.log('Clearing inactivity timer...');
       clearTimeout(inactivityTimer.value);
       inactivityTimer.value = null;
     }
     
-    // Note: Event listeners will be cleaned up when the page is unloaded
-    // or when new ones are added on next authentication
+    // Remove event listeners for activity monitoring
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.removeEventListener(event, () => {}, { passive: true });
+    });
+    
+    // Remove visibility and window event listeners
+    document.removeEventListener('visibilitychange', () => {});
+    window.removeEventListener('focus', () => {});
+    window.removeEventListener('blur', () => {});
+    
+    console.log('Auth data cleared successfully');
   }
 
   async function fetchProfile(): Promise<void> {
@@ -244,9 +275,11 @@ export const useAuthStore = defineStore('auth', () => {
       if (accessToken.value && refreshToken.value) {
         // Check if access token is expired
         if (isTokenExpired(accessToken.value)) {
+          console.log('Access token expired, attempting refresh...');
           // Try to refresh the token
           const refreshed = await refreshTokens();
           if (!refreshed) {
+            console.log('Token refresh failed, clearing auth data');
             // If refresh failed, clear auth data
             clearAuthData();
             isInitialized.value = true;
@@ -256,7 +289,9 @@ export const useAuthStore = defineStore('auth', () => {
         
         // Fetch user profile to verify token is still valid
         try {
+          console.log('Fetching user profile...');
           await fetchProfile();
+          console.log('Profile fetched successfully');
           // Set up automatic token refresh
           setupTokenRefreshTimer();
           // Set up activity monitoring
@@ -266,16 +301,24 @@ export const useAuthStore = defineStore('auth', () => {
           // If profile fetch fails, try to refresh token one more time
           const refreshed = await refreshTokens();
           if (refreshed) {
-            await fetchProfile();
-            // Set up automatic token refresh
-            setupTokenRefreshTimer();
-            // Set up activity monitoring
-            setupActivityMonitoring();
+            try {
+              await fetchProfile();
+              console.log('Profile fetched after token refresh');
+              // Set up automatic token refresh
+              setupTokenRefreshTimer();
+              // Set up activity monitoring
+              setupActivityMonitoring();
+            } catch (profileError) {
+              console.error('Failed to fetch profile after token refresh:', profileError);
+              clearAuthData();
+            }
           } else {
+            console.log('Token refresh failed after profile fetch error, clearing auth data');
             clearAuthData();
           }
         }
       } else {
+        console.log('No tokens found, clearing any stale data');
         // No tokens found, clear any stale data
         clearAuthData();
       }

@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { useTheme } from './composables/useTheme'
@@ -45,16 +45,18 @@ const shouldUseAuthLayout = computed(() => {
   return false
 })
 
-onMounted(async () => {
+// Initialize app before mounting
+onBeforeMount(async () => {
   try {
     // Initialize theme first
     initializeTheme()
     
-    // Then initialize auth
+    // Then initialize auth - this is critical for preventing redirects
     await authStore.initializeAuth()
   } catch (error) {
     console.error('Failed to initialize auth:', error)
-    // Don't throw error, just log it and continue
+    // Clear any invalid auth data
+    authStore.clearAuthData()
   } finally {
     isInitializing.value = false
   }

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест аутентификации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        .info { background-color: #d1ecf1; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест аутентификации AiKademiya</h1>
+    
+    <div class="test-section info">
+        <h3>Статус аутентификации</h3>
+        <div id="auth-status">Проверка...</div>
+        <div id="token-info"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Тестирование API</h3>
+        <button class="btn-primary" onclick="testLogin()">Тест входа</button>
+        <button class="btn-success" onclick="testProfile()">Тест профиля</button>
+        <button class="btn-success" onclick="testRefresh()">Тест обновления токена</button>
+        <button class="btn-danger" onclick="testLogout()">Тест выхода</button>
+        <button class="btn-primary" onclick="clearStorage()">Очистить localStorage</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Результаты тестов</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api/v1';
+        
+        // Тестовые данные
+        const testCredentials = {
+            email: 'test@example.com',
+            password: 'testpass123'
+        };
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-section ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        function updateAuthStatus() {
+            const accessToken = localStorage.getItem('access_token');
+            const refreshToken = localStorage.getItem('refresh_token');
+            
+            const statusDiv = document.getElementById('auth-status');
+            const tokenDiv = document.getElementById('token-info');
+            
+            if (accessToken && refreshToken) {
+                statusDiv.innerHTML = '<span style="color: green;">✓ Авторизован</span>';
+                
+                // Парсим токен для получения информации
+                try {
+                    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+                    const expDate = new Date(payload.exp * 1000);
+                    const now = new Date();
+                    
+                    tokenDiv.innerHTML = `
+                        <p><strong>Access Token:</strong> ${accessToken.substring(0, 50)}...</p>
+                        <p><strong>Expires:</strong> ${expDate.toLocaleString()}</p>
+                        <p><strong>Time left:</strong> ${Math.round((expDate - now) / 1000 / 60)} minutes</p>
+                    `;
+                } catch (e) {
+                    tokenDiv.innerHTML = '<p>Ошибка парсинга токена</p>';
+                }
+            } else {
+                statusDiv.innerHTML = '<span style="color: red;">✗ Не авторизован</span>';
+                tokenDiv.innerHTML = '';
+            }
+        }
+
+        async function testLogin() {
+            try {
+                log('Тестирование входа...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/login/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testCredentials)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.data.tokens.access);
+                    localStorage.setItem('refresh_token', data.data.tokens.refresh);
+                    log('Вход успешен!', 'success');
+                    updateAuthStatus();
+                } else {
+                    log(`Ошибка входа: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProfile() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    log('Нет токена для тестирования профиля', 'error');
+                    return;
+                }
+                
+                log('Тестирование получения профиля...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/profile/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('Профиль получен успешно!', 'success');
+                    log(`Email: ${data.data.email}`, 'info');
+                } else {
+                    log(`Ошибка получения профиля: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRefresh() {
+            try {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (!refreshToken) {
+                    log('Нет refresh токена для тестирования', 'error');
+                    return;
+                }
+                
+                log('Тестирование обновления токена...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/token/refresh/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refresh: refreshToken })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access);
+                    log('Токен обновлен успешно!', 'success');
+                    updateAuthStatus();
+                } else {
+                    log(`Ошибка обновления токена: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            try {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (!refreshToken) {
+                    log('Нет refresh токена для выхода', 'error');
+                    return;
+                }
+                
+                log('Тестирование выхода...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/logout/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refresh: refreshToken })
+                });
+                
+                if (response.ok) {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    log('Выход выполнен успешно!', 'success');
+                    updateAuthStatus();
+                } else {
+                    const data = await response.json();
+                    log(`Ошибка выхода: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            log('localStorage очищен', 'info');
+            updateAuthStatus();
+        }
+
+        // Инициализация
+        updateAuthStatus();
+        
+        // Обновляем статус каждые 5 секунд
+        setInterval(updateAuthStatus, 5000);
+    </script>
+</body>
+</html>
