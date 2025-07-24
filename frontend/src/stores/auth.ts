@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { authApi } from '@/api/auth';
-import type { User, AuthTokens, LoginCredentials, RegisterData } from '@/types';
+import type { User, LoginCredentials, RegisterData } from '@/types';
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -128,7 +128,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refreshTokens(): Promise<boolean> {
     if (!refreshToken.value) {
-      console.log('No refresh token available');
+      console.log('No refresh token available for refresh');
       return false;
     }
 
@@ -136,6 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('Attempting to refresh token...');
       const { access } = await authApi.refreshToken(refreshToken.value);
       
+      // Update tokens
       accessToken.value = access;
       localStorage.setItem('access_token', access);
       
@@ -143,14 +144,12 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Set up automatic token refresh for new token
       setupTokenRefreshTimer();
-      // Set up activity monitoring
-      setupActivityMonitoring();
       
       return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
       // Don't call logout() here to avoid infinite loops
-      // Just clear the data
+      // Just clear the data and don't set up activity monitoring
       clearAuthData();
       return false;
     }
@@ -174,6 +173,12 @@ export const useAuthStore = defineStore('auth', () => {
       clearAuthData();
     }
   }
+
+  // Store references to event listeners for proper cleanup
+  const activityListeners = ref<{ [key: string]: () => void }>({});
+  const visibilityListener = ref<(() => void) | null>(null);
+  const focusListener = ref<(() => void) | null>(null);
+  const blurListener = ref<(() => void) | null>(null);
 
   function clearAuthData(): void {
     console.log('Clearing all auth data...');
@@ -201,16 +206,25 @@ export const useAuthStore = defineStore('auth', () => {
       inactivityTimer.value = null;
     }
     
-    // Remove event listeners for activity monitoring
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-    events.forEach(event => {
-      document.removeEventListener(event, () => {}, { passive: true });
+    // Remove activity event listeners
+    Object.entries(activityListeners.value).forEach(([event, listener]) => {
+      document.removeEventListener(event, listener, { passive: true } as any);
     });
+    activityListeners.value = {};
     
     // Remove visibility and window event listeners
-    document.removeEventListener('visibilitychange', () => {});
-    window.removeEventListener('focus', () => {});
-    window.removeEventListener('blur', () => {});
+    if (visibilityListener.value) {
+      document.removeEventListener('visibilitychange', visibilityListener.value);
+      visibilityListener.value = null;
+    }
+    if (focusListener.value) {
+      window.removeEventListener('focus', focusListener.value);
+      focusListener.value = null;
+    }
+    if (blurListener.value) {
+      window.removeEventListener('blur', blurListener.value);
+      blurListener.value = null;
+    }
     
     console.log('Auth data cleared successfully');
   }
@@ -268,48 +282,78 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Initialize auth state on store creation
   async function initializeAuth(): Promise<void> {
-    if (isInitialized.value) return;
+    if (isInitialized.value) {
+      console.log('Auth already initialized, skipping...');
+      return;
+    }
+    
+    console.log('Starting auth initialization...');
     
     try {
+      // Read tokens from localStorage
+      const storedAccessToken = localStorage.getItem('access_token');
+      const storedRefreshToken = localStorage.getItem('refresh_token');
+      
+      console.log('Stored tokens:', {
+        hasAccessToken: !!storedAccessToken,
+        hasRefreshToken: !!storedRefreshToken
+      });
+      
+      // Update reactive values
+      accessToken.value = storedAccessToken;
+      refreshToken.value = storedRefreshToken;
+      
       // Check if we have tokens
       if (accessToken.value && refreshToken.value) {
+        console.log('Tokens found, checking validity...');
+        
         // Check if access token is expired
         if (isTokenExpired(accessToken.value)) {
           console.log('Access token expired, attempting refresh...');
           // Try to refresh the token
           const refreshed = await refreshTokens();
           if (!refreshed) {
-            console.log('Token refresh failed, clearing auth data');
-            // If refresh failed, clear auth data
+            console.log('Token refresh failed during initialization, clearing auth data');
             clearAuthData();
             isInitialized.value = true;
             return;
           }
+          console.log('Token refreshed successfully during initialization');
         }
         
         // Fetch user profile to verify token is still valid
         try {
-          console.log('Fetching user profile...');
+          console.log('Fetching user profile to verify token...');
           await fetchProfile();
-          console.log('Profile fetched successfully');
+          console.log('Profile fetched successfully, user is authenticated');
+          
           // Set up automatic token refresh
           setupTokenRefreshTimer();
           // Set up activity monitoring
           setupActivityMonitoring();
+          
+          console.log('Auth initialization completed successfully');
         } catch (error) {
           console.error('Failed to fetch profile during initialization:', error);
+          
           // If profile fetch fails, try to refresh token one more time
+          console.log('Attempting one more token refresh...');
           const refreshed = await refreshTokens();
           if (refreshed) {
             try {
+              console.log('Retrying profile fetch after token refresh...');
               await fetchProfile();
-              console.log('Profile fetched after token refresh');
+              console.log('Profile fetched successfully after token refresh');
+              
               // Set up automatic token refresh
               setupTokenRefreshTimer();
               // Set up activity monitoring
               setupActivityMonitoring();
+              
+              console.log('Auth initialization completed after retry');
             } catch (profileError) {
               console.error('Failed to fetch profile after token refresh:', profileError);
+              console.log('Clearing auth data due to persistent profile fetch failure');
               clearAuthData();
             }
           } else {
@@ -318,20 +362,36 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
       } else {
-        console.log('No tokens found, clearing any stale data');
-        // No tokens found, clear any stale data
+        console.log('No tokens found in localStorage, user not authenticated');
         clearAuthData();
       }
     } catch (error) {
-      console.error('Auth initialization failed:', error);
+      console.error('Auth initialization failed with error:', error);
       clearAuthData();
     } finally {
       isInitialized.value = true;
+      console.log('Auth initialization process completed, isInitialized =', isInitialized.value);
     }
   }
 
   // Helper function to set up activity monitoring
   function setupActivityMonitoring(): void {
+    // Clear existing listeners first
+    Object.entries(activityListeners.value).forEach(([event, listener]) => {
+      document.removeEventListener(event, listener, { passive: true } as any);
+    });
+    activityListeners.value = {};
+    
+    if (visibilityListener.value) {
+      document.removeEventListener('visibilitychange', visibilityListener.value);
+    }
+    if (focusListener.value) {
+      window.removeEventListener('focus', focusListener.value);
+    }
+    if (blurListener.value) {
+      window.removeEventListener('blur', blurListener.value);
+    }
+
     // Clear existing inactivity timer
     if (inactivityTimer.value) {
       clearTimeout(inactivityTimer.value);
@@ -366,11 +426,12 @@ export const useAuthStore = defineStore('auth', () => {
     // Listen for user activity events
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
     events.forEach(event => {
+      activityListeners.value[event] = resetTimers;
       document.addEventListener(event, resetTimers, { passive: true });
     });
 
     // Handle page visibility changes
-    const handleVisibilityChange = () => {
+    visibilityListener.value = () => {
       if (document.hidden) {
         // Page is hidden, pause inactivity timer
         if (inactivityTimer.value) {
@@ -384,18 +445,18 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     // Handle window focus/blur
-    const handleWindowFocus = () => {
+    focusListener.value = () => {
       resetTimers();
     };
 
-    const handleWindowBlur = () => {
+    blurListener.value = () => {
       // Window lost focus, but don't clear timer immediately
       // Timer will continue running unless page becomes hidden
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleWindowFocus);
-    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('visibilitychange', visibilityListener.value);
+    window.addEventListener('focus', focusListener.value);
+    window.addEventListener('blur', blurListener.value);
   }
 
   return {

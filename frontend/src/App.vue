@@ -51,12 +51,23 @@ onBeforeMount(async () => {
     // Initialize theme first
     initializeTheme()
     
-    // Then initialize auth - this is critical for preventing redirects
-    await authStore.initializeAuth()
+    // Auth is already initialized in main.ts, just wait for it
+    // This prevents double initialization and race conditions
+    let retries = 0;
+    const maxRetries = 50; // 5 seconds max wait
+    
+    while (!authStore.isInitialized && retries < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      retries++;
+    }
+    
+    if (!authStore.isInitialized) {
+      console.warn('Auth initialization timed out, continuing...');
+    } else {
+      console.log('Auth initialization confirmed in App.vue');
+    }
   } catch (error) {
-    console.error('Failed to initialize auth:', error)
-    // Clear any invalid auth data
-    authStore.clearAuthData()
+    console.error('Failed to wait for auth initialization:', error)
   } finally {
     isInitializing.value = false
   }

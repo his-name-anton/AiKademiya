@@ -57,10 +57,28 @@ class ApiClient {
         // Only handle 401 errors for authenticated requests
         if (error.response?.status === 401 && error.config?.headers?.Authorization) {
           console.log('401 error with Authorization header, attempting token refresh...');
+          
+          // Prevent infinite retry loops
+          if (error.config._retry) {
+            console.log('Request already retried, not attempting again');
+            await authStore.logout();
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login' && currentPath !== '/') {
+              console.log('Redirecting to login page after retry failure...');
+              window.location.href = '/login';
+            }
+            return Promise.reject(error);
+          }
+          
+          // Mark request as retried
+          error.config._retry = true;
+          
           // Try to refresh token
           const refreshed = await authStore.refreshTokens();
           if (refreshed && error.config) {
             console.log('Token refreshed, retrying original request...');
+            // Update Authorization header with new token
+            error.config.headers.Authorization = `Bearer ${authStore.token}`;
             // Retry original request with new token
             return this.client.request(error.config);
           } else {
