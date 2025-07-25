@@ -6,6 +6,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
+from core.decorators import (
+    cache_user_data, invalidate_user_cache, api_rate_limit, api_rate_limit_strict
+)
+from core.redis_utils import UserCache
+
 from .models import User
 from .serializers import (
     UserRegistrationSerializer,
@@ -32,6 +37,7 @@ class UserRegistrationView(generics.CreateAPIView):
             400: OpenApiResponse(description="Ошибки валидации")
         }
     )
+    @api_rate_limit_strict  # Ограниченный лимит для регистрации
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -72,6 +78,7 @@ class UserLoginView(APIView):
             400: OpenApiResponse(description="Неверные учетные данные")
         }
     )
+    @api_rate_limit_strict  # Ограниченный лимит для входа
     def post(self, request):
         serializer = UserLoginSerializer(
             data=request.data,
@@ -153,6 +160,8 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             401: OpenApiResponse(description="Не авторизован")
         }
     )
+    @cache_user_data(timeout=900)  # Кешируем профиль на 15 минут
+    @api_rate_limit
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -166,6 +175,8 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             401: OpenApiResponse(description="Не авторизован")
         }
     )
+    @invalidate_user_cache  # Очищаем кеш при обновлении
+    @api_rate_limit
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
@@ -186,6 +197,7 @@ class ChangePasswordView(APIView):
             401: OpenApiResponse(description="Не авторизован")
         }
     )
+    @api_rate_limit_strict  # Ограниченный лимит для смены пароля
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data,
@@ -194,6 +206,10 @@ class ChangePasswordView(APIView):
         
         if serializer.is_valid():
             serializer.save()
+            
+            # Очищаем кеш пользователя после смены пароля
+            UserCache.clear_user_cache(request.user.id)
+            
             return Response({
                 'message': 'Пароль успешно изменен'
             }, status=status.HTTP_200_OK)
@@ -211,6 +227,8 @@ class ChangePasswordView(APIView):
 )
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
+@cache_user_data(timeout=300)  # Кешируем проверку токена на 5 минут
+@api_rate_limit
 def verify_token(request):
     """
     Проверка валидности JWT токена

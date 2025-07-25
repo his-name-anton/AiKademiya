@@ -1,0 +1,263 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:"Django site admin" }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">AI Akademiya Admin</a></h1>
+{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>{{ title }}</h1>
+    
+    {% if error %}
+        <div class="error">
+            <strong>Ошибка подключения к Redis:</strong> {{ error }}
+        </div>
+    {% else %}
+        <div class="module">
+            <h2>Основная информация</h2>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Версия Redis:</th>
+                        <td>{{ redis_info.redis_version|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Режим работы:</th>
+                        <td>{{ redis_info.redis_mode|default:"standalone" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Время работы:</th>
+                        <td>{{ redis_info.uptime_in_seconds|default:"N/A" }} секунд</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="module">
+            <h2>Использование памяти</h2>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Используемая память:</th>
+                        <td>{{ redis_info.used_memory_human|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Пиковая память:</th>
+                        <td>{{ redis_info.used_memory_peak_human|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Лимит памяти:</th>
+                        <td>{{ redis_info.maxmemory_human|default:"Не установлен" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="module">
+            <h2>Статистика ключей</h2>
+            <table>
+                <tbody>
+                    {% if redis_info.db0 %}
+                    <tr>
+                        <th>Количество ключей (db0):</th>
+                        <td>{{ redis_info.db0.keys|default:"0" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ключи с TTL (db0):</th>
+                        <td>{{ redis_info.db0.expires|default:"0" }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <th>Количество ключей:</th>
+                        <td>0</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="module">
+            <h2>Статистика производительности</h2>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Попадания в кеш:</th>
+                        <td>{{ redis_info.keyspace_hits|default:"0" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Промахи кеша:</th>
+                        <td>{{ redis_info.keyspace_misses|default:"0" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Hit Rate:</th>
+                        <td>
+                            {% with hits=redis_info.keyspace_hits|default:0 misses=redis_info.keyspace_misses|default:0 %}
+                                {% if hits or misses %}
+                                    {% widthratio hits hits|add:misses 100 %}%
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Команд за секунду:</th>
+                        <td>{{ redis_info.instantaneous_ops_per_sec|default:"0" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="module">
+            <h2>Управление кешем</h2>
+            <div style="margin: 10px 0;">
+                <button type="button" id="clear-all-cache" class="default" style="background-color: #dc3545; color: white; padding: 8px 16px; border: none; cursor: pointer;">
+                    Очистить весь кеш
+                </button>
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <input type="text" id="cache-pattern" placeholder="Паттерн (например: course:*)" style="width: 200px; padding: 6px;">
+                <button type="button" id="clear-pattern-cache" class="default" style="background-color: #ffc107; color: black; padding: 6px 12px; border: none; cursor: pointer; margin-left: 5px;">
+                    Очистить по паттерну
+                </button>
+            </div>
+            
+            <div id="cache-result" style="margin-top: 10px;"></div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const csrftoken = getCookie('csrftoken');
+    
+    function showResult(message, isError = false) {
+        const resultDiv = document.getElementById('cache-result');
+        resultDiv.innerHTML = `<div style="padding: 10px; margin: 5px 0; border-radius: 4px; background-color: ${isError ? '#f8d7da' : '#d4edda'}; color: ${isError ? '#721c24' : '#155724'}; border: 1px solid ${isError ? '#f5c6cb' : '#c3e6cb'};">${message}</div>`;
+        setTimeout(() => {
+            resultDiv.innerHTML = '';
+        }, 5000);
+    }
+    
+    document.getElementById('clear-all-cache').addEventListener('click', function() {
+        if (confirm('Вы уверены, что хотите очистить весь кеш?')) {
+            fetch('{% url "redis_clear" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'clear_all=true'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showResult(data.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showResult(data.error, true);
+                }
+            })
+            .catch(error => {
+                showResult('Ошибка запроса: ' + error.message, true);
+            });
+        }
+    });
+    
+    document.getElementById('clear-pattern-cache').addEventListener('click', function() {
+        const pattern = document.getElementById('cache-pattern').value.trim();
+        if (!pattern) {
+            showResult('Введите паттерн для очистки', true);
+            return;
+        }
+        
+        if (confirm(`Вы уверены, что хотите очистить кеш по паттерну "${pattern}"?`)) {
+            fetch('{% url "redis_clear" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `pattern=${encodeURIComponent(pattern)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showResult(data.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showResult(data.error, true);
+                }
+            })
+            .catch(error => {
+                showResult('Ошибка запроса: ' + error.message, true);
+            });
+        }
+    });
+});
+</script>
+
+<style>
+.module {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.module h2 {
+    background: #f8f9fa;
+    margin: 0;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.module table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.module table th,
+.module table td {
+    text-align: left;
+    padding: 8px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.module table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    width: 30%;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+</style>
+{% endblock %}

@@ -13,6 +13,12 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParamet
 from temporalio.client import Client
 from temporalio.service import RPCError, RPCStatusCode
 
+from core.decorators import (
+    cache_api_response, cache_course_data, invalidate_course_cache,
+    api_rate_limit, generation_rate_limit
+)
+from core.redis_utils import CourseCache, GenerationCache
+
 from .models import Course, Module, Chapter, CourseCategory
 from .serializers import (
     CourseSerializer, CourseListSerializer, CourseDetailSerializer,
@@ -35,6 +41,8 @@ class CourseCategoryListView(generics.ListCreateAPIView):
         summary="Список категорий курсов",
         description="Получение списка всех категорий курсов"
     )
+    @cache_api_response(timeout=1800)  # Кешируем на 30 минут
+    @api_rate_limit
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -94,6 +102,8 @@ class CourseListCreateView(generics.ListCreateAPIView):
             OpenApiParameter('my_courses', bool, description='Показать только мои курсы'),
         ]
     )
+    @cache_api_response(timeout=600)  # Кешируем на 10 минут
+    @api_rate_limit
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -140,6 +150,8 @@ class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
         summary="Детали курса",
         description="Получение подробной информации о курсе включая модули и главы"
     )
+    @cache_course_data(timeout=1800)  # Кешируем на 30 минут
+    @api_rate_limit
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -147,6 +159,8 @@ class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
         summary="Обновить курс",
         description="Обновление информации о курсе (только владелец или админ)"
     )
+    @invalidate_course_cache
+    @api_rate_limit
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
@@ -154,6 +168,8 @@ class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
         summary="Удалить курс",
         description="Удаление курса (только владелец или админ)"
     )
+    @invalidate_course_cache
+    @api_rate_limit
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
 
@@ -260,12 +276,22 @@ class CourseGenerationView(APIView):
             400: OpenApiResponse(description="Ошибки валидации")
         }
     )
+    @generation_rate_limit  # Ограничение на генерацию
     def post(self, request):
         serializer = CourseGenerationSerializer(data=request.data)
         if serializer.is_valid():
             topic = serializer.validated_data['topic']
             try:
                 workflow_id = asyncio.run(_start_workflow(topic))
+                
+                # Сохраняем статус генерации в кеш
+                GenerationCache.set_generation_status(workflow_id, {
+                    'status': 'started',
+                    'topic': topic,
+                    'user_id': request.user.id,
+                    'created_at': json.dumps({'timestamp': 'now'})  # Заменим на реальное время
+                })
+                
                 return Response({
                     'workflow_id': workflow_id,
                     'message': 'Генерация курса запущена',
@@ -290,14 +316,24 @@ class CourseGenerationView(APIView):
 )
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
+@api_rate_limit
 def course_generation_status(request, workflow_id: str):
     """
     Получение статуса генерации курса
     """
+    # Проверяем кеш сначала
+    cached_status = GenerationCache.get_generation_status(workflow_id)
+    if cached_status:
+        return Response(cached_status, status=status.HTTP_200_OK)
+    
     try:
         info = asyncio.run(_workflow_status(workflow_id))
         if isinstance(info, dict) and info.get("error") == "timeout":
             return Response(info, status=status.HTTP_504_GATEWAY_TIMEOUT)
+        
+        # Сохраняем статус в кеш
+        GenerationCache.set_generation_status(workflow_id, info)
+        
         return Response(info, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({
@@ -315,12 +351,20 @@ def course_generation_status(request, workflow_id: str):
 )
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
+@api_rate_limit
 def confirm_course_generation(request, workflow_id: str):
     """
     Подтверждение сгенерированного курса
     """
     try:
         asyncio.run(_signal_workflow(workflow_id, "confirm", True))
+        
+        # Обновляем статус в кеше
+        GenerationCache.set_generation_status(workflow_id, {
+            'status': 'confirmed',
+            'user_id': request.user.id
+        })
+        
         return Response({
             'message': 'Курс подтвержден'
         }, status=status.HTTP_200_OK)
@@ -340,6 +384,7 @@ def confirm_course_generation(request, workflow_id: str):
 )
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
+@generation_rate_limit
 def generate_next_chapter(request, workflow_id: str):
     """
     Генерация следующей главы курса
