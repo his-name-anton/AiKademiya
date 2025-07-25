@@ -70,6 +70,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Redis middleware
+    "core.middleware.RedisHealthCheckMiddleware",
+    "core.middleware.CacheStatsMiddleware", 
+    "core.middleware.CacheHeadersMiddleware",
 ]
 
 ROOT_URLCONF = "aikademiya.urls"
@@ -107,6 +111,26 @@ DATABASES = {
     }
 }
 
+# Redis configuration
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/1")
+
+# Cache configuration with Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": True,  # Не падать при недоступности Redis
+        },
+        "KEY_PREFIX": "aikademiya",
+        "TIMEOUT": 300,  # Default timeout 5 минут
+    }
+}
+
+# Session storage в Redis
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

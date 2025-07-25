@@ -42,3 +42,7 @@ typing-inspection==0.4.1
 typing_extensions==4.14.1
 tzdata==2025.2
 urllib3==2.5.0
+# Redis для кеширования
+redis==5.2.0
+django-redis==5.4.0
+django-ratelimit==4.1.0
