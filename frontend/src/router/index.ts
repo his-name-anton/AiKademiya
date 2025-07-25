@@ -140,26 +140,47 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  
+  // Wait for auth initialization before checking auth state
+  if (!authStore.isInitialized) {
+    console.log('Auth not initialized in router, waiting...')
+    try {
+      await authStore.initializeAuth()
+    } catch (error) {
+      console.error('Failed to initialize auth in router:', error)
+      authStore.clearAuthData()
+    }
+  }
   // Set page title
   if (to.meta.title) {
     document.title = to.meta.title as string
   }
   
+  // Wait for auth initialization if not already done
+  if (!authStore.isInitialized) {
+    console.log('⏳ Auth store not initialized yet, waiting for initialization...');
+    try {
+      await authStore.initializeAuth();
+      console.log('✅ Auth store initialization completed in router guard');
+    } catch (error) {
+      console.error('❌ Auth initialization failed in router guard:', error);
+    }
+  }
+  
   // Check authentication requirements
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    console.log('Route requires auth but user not authenticated, redirecting to login');
+    console.log('🚫 Route requires auth but user not authenticated, redirecting to login');
     next('/login')
     return
   }
   
   // Redirect authenticated users away from auth pages
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    console.log('Authenticated user trying to access guest page, redirecting to home');
-    next('/')
+    console.log('Authenticated user trying to access guest page, redirecting to dashboard')
+    next('/dashboard')
     return
   }
   
+  console.log('✅ Router guard: allowing navigation to', to.path);
   next()
 })
 

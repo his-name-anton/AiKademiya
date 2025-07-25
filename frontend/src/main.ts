@@ -39,8 +39,14 @@ async function initializeApp() {
   try {
     console.log('Initializing auth store before app mount...')
     const authStore = useAuthStore()
-    await authStore.initializeAuth()
-    console.log('Auth store initialized successfully')
+    
+    // Only initialize if not already initialized (could be done by router guard)
+    if (!authStore.isInitialized) {
+      await authStore.initializeAuth()
+      console.log('Auth store initialized successfully')
+    } else {
+      console.log('Auth store already initialized, skipping...')
+    }
   } catch (error) {
     console.error('Failed to initialize auth store:', error)
   } finally {

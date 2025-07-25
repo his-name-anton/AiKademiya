@@ -2,12 +2,10 @@
 import flowbitePlugin from 'flowbite/plugin'
 
 export default {
+    darkMode: 'class', // Включаем dark mode через CSS класс
     content: [
         './index.html',
-        './components/**/*.{vue,js}',
-        './pages/**/*.{vue,js}',
-        './router/**/*.{js,ts}',
-        './App.vue',
+        './src/**/*.{vue,js,ts}', // Исправляем путь к файлам
         './node_modules/flowbite/**/*.js'
     ],
     theme: {

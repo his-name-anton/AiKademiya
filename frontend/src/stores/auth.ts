@@ -271,21 +271,23 @@ export const useAuthStore = defineStore('auth', () => {
   // Initialize auth state on store creation
   async function initializeAuth(): Promise<void> {
     if (isInitialized.value) {
-      console.log('Auth already initialized, skipping...');
+      console.log('🚀 Auth already initialized, skipping...');
       return;
     }
     
-    console.log('Starting auth initialization...');
+    console.log('🚀 Starting auth initialization...');
     
     try {
-      // Get tokens from localStorage directly to ensure we have fresh values
-      const storedAccessToken = localStorage.getItem('access_token');
-      const storedRefreshToken = localStorage.getItem('refresh_token');
-      
-      console.log('Stored tokens:', {
-        hasAccess: !!storedAccessToken,
-        hasRefresh: !!storedRefreshToken
-      });
+              // Get tokens from localStorage directly to ensure we have fresh values
+        const storedAccessToken = localStorage.getItem('access_token');
+        const storedRefreshToken = localStorage.getItem('refresh_token');
+        
+        console.log('🔍 Stored tokens:', {
+          hasAccess: !!storedAccessToken,
+          hasRefresh: !!storedRefreshToken,
+          accessTokenLength: storedAccessToken?.length || 0,
+          refreshTokenLength: storedRefreshToken?.length || 0
+        });
       
       // Update refs with stored values
       accessToken.value = storedAccessToken;
@@ -353,7 +355,12 @@ export const useAuthStore = defineStore('auth', () => {
       clearAuthData();
     } finally {
       isInitialized.value = true;
-      console.log('Auth initialization completed, isAuthenticated:', isAuthenticated.value);
+      console.log('🏁 Auth initialization completed', {
+        isAuthenticated: isAuthenticated.value,
+        hasUser: !!user.value,
+        hasToken: !!accessToken.value,
+        userEmail: user.value?.email
+      });
     }
   }
 
